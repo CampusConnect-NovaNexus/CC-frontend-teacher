@@ -1,75 +1,155 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import DashboardCard from '@/components/DashboardCard';
+import { fetchGrievanceStats } from '@/service/grievance/getStats';
+import { fetchAttendanceStats } from '@/service/attendance/getStats';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function DashboardScreen() {
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    pendingGrievances: 0,
+    resolvedGrievances: 0,
+    totalGrievances: 0,
+    averageAttendance: 0,
+    lowAttendanceStudents: 0,
+    totalStudents: 0,
+  });
 
-export default function HomeScreen() {
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        // In a real app, these would be actual API calls
+        // For now, we'll simulate with mock data
+        const grievanceStats = await fetchGrievanceStats();
+        const attendanceStats = await fetchAttendanceStats();
+        
+        setStats({
+          pendingGrievances: grievanceStats.pending || 0,
+          resolvedGrievances: grievanceStats.resolved || 0,
+          totalGrievances: grievanceStats.total || 0,
+          averageAttendance: attendanceStats.averagePercentage || 0,
+          lowAttendanceStudents: attendanceStats.lowAttendanceCount || 0,
+          totalStudents: attendanceStats.totalStudents || 0,
+        });
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-50">
+        <ActivityIndicator size="large" color="#3498db" />
+      </View>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView className="flex-1 bg-gray-50">
+      <View className="p-4">
+        <Text className="text-2xl font-bold mb-6">Teacher Dashboard</Text>
+        
+        {/* Quick Actions */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold mb-3">Quick Actions</Text>
+          <View className="flex-row flex-wrap">
+            <TouchableOpacity 
+              className="bg-white rounded-lg p-4 mr-4 mb-4 shadow-sm w-[45%] items-center"
+              onPress={() => router.push('/attendance/take')}
+            >
+              <Ionicons name="calendar-outline" size={28} color="#3498db" />
+              <Text className="mt-2 font-medium">Take Attendance</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className="bg-white rounded-lg p-4 mb-4 shadow-sm w-[45%] items-center"
+              onPress={() => router.push('/grievances')}
+            >
+              <Ionicons name="document-text-outline" size={28} color="#3498db" />
+              <Text className="mt-2 font-medium">View Grievances</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className="bg-white rounded-lg p-4 mr-4 mb-4 shadow-sm w-[45%] items-center"
+              onPress={() => router.push('/attendance/reports')}
+            >
+              <Ionicons name="bar-chart-outline" size={28} color="#3498db" />
+              <Text className="mt-2 font-medium">Attendance Reports</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className="bg-white rounded-lg p-4 mb-4 shadow-sm w-[45%] items-center"
+              onPress={() => router.push('/profile')}
+            >
+              <Ionicons name="settings-outline" size={28} color="#3498db" />
+              <Text className="mt-2 font-medium">Settings</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Grievance Stats */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold mb-3">Grievance Overview</Text>
+          <View className="flex-row flex-wrap">
+            <DashboardCard 
+              title="Pending"
+              value={stats.pendingGrievances}
+              icon="alert-circle-outline"
+              color="#f39c12"
+              onPress={() => router.push('/grievances?filter=pending')}
+            />
+            <DashboardCard 
+              title="Resolved"
+              value={stats.resolvedGrievances}
+              icon="checkmark-circle-outline"
+              color="#2ecc71"
+              onPress={() => router.push('/grievances?filter=resolved')}
+            />
+            <DashboardCard 
+              title="Total"
+              value={stats.totalGrievances}
+              icon="document-text-outline"
+              color="#3498db"
+              onPress={() => router.push('/grievances')}
+            />
+          </View>
+        </View>
+        
+        {/* Attendance Stats */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold mb-3">Attendance Overview</Text>
+          <View className="flex-row flex-wrap">
+            <DashboardCard 
+              title="Avg. Attendance"
+              value={`${stats.averageAttendance}%`}
+              icon="analytics-outline"
+              color="#3498db"
+              onPress={() => router.push('/attendance/reports')}
+            />
+            <DashboardCard 
+              title="Low Attendance"
+              value={stats.lowAttendanceStudents}
+              icon="warning-outline"
+              color="#e74c3c"
+              onPress={() => router.push('/attendance/low')}
+            />
+            <DashboardCard 
+              title="Total Students"
+              value={stats.totalStudents}
+              icon="people-outline"
+              color="#9b59b6"
+              onPress={() => router.push('/attendance/students')}
+            />
+          </View>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
