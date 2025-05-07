@@ -3,9 +3,18 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
   const { user, isLoading } = useAuth();
+  const colorScheme = useColorScheme();
+  
+  // Get theme colors
+  const primary = useThemeColor({}, 'primary');
+  const tabIconDefault = useThemeColor({}, 'tabIconDefault');
+  const tabBackground = useThemeColor({}, 'tabBackground');
+  const textInverse = useThemeColor({}, 'textInverse');
 
   // Redirect to login if not authenticated
   React.useEffect(() => {
@@ -17,19 +26,38 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#3498db',
-        tabBarInactiveTintColor: '#95a5a6',
+        // Tab bar styling
+        tabBarActiveTintColor: primary,
+        tabBarInactiveTintColor: tabIconDefault,
         tabBarStyle: {
           height: 60,
           paddingBottom: 10,
+          backgroundColor: tabBackground,
+          borderTopColor: useThemeColor({}, 'border'),
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
         },
+        
+        // Header styling
         headerStyle: {
-          backgroundColor: '#3498db',
+          backgroundColor: primary,
         },
-        headerTintColor: '#fff',
+        headerTintColor: textInverse,
         headerTitleStyle: {
           fontWeight: 'bold',
         },
+        
+        // Tab bar label styling
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
+        
+        // Animation
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import DashboardCard from '@/components/DashboardCard';
 import { fetchGrievanceStats } from '@/service/grievance/getStats';
 import { fetchAttendanceStats } from '@/service/attendance/getStats';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardContent } from '@/components/ui/Card';
+import { spacing, layout, borderRadius } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
@@ -16,6 +22,9 @@ export default function DashboardScreen() {
     lowAttendanceStudents: 0,
     totalStudents: 0,
   });
+
+  // Get theme colors
+  const primaryColor = useThemeColor({}, 'primary');
 
   useEffect(() => {
     const loadStats = async () => {
@@ -45,111 +54,163 @@ export default function DashboardScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#3498db" />
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={primaryColor} />
+      </ThemedView>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4">
-        <Text className="text-2xl font-bold mb-6">Teacher Dashboard</Text>
+    <ThemedView style={styles.container}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <ThemedText variant="displaySmall" style={styles.pageTitle}>
+          Teacher Dashboard
+        </ThemedText>
         
         {/* Quick Actions */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold mb-3">Quick Actions</Text>
-          <View className="flex-row flex-wrap">
-            <TouchableOpacity 
-              className="bg-white rounded-lg p-4 mr-4 mb-4 shadow-sm w-[45%] items-center"
-              onPress={() => router.push('/attendance/take')}
-            >
-              <Ionicons name="calendar-outline" size={28} color="#3498db" />
-              <Text className="mt-2 font-medium">Take Attendance</Text>
-            </TouchableOpacity>
+        <Card style={styles.sectionCard}>
+          <CardHeader title="Quick Actions" />
+          <CardContent style={styles.quickActionsContainer}>
+            <View style={styles.actionButtonsRow}>
+              <Button 
+                variant="primary"
+                leftIcon="calendar-outline"
+                style={styles.actionButton}
+                onPress={() => router.push('/attendance/take')}
+              >
+                Take Attendance
+              </Button>
+              
+              <Button 
+                variant="primary"
+                leftIcon="document-text-outline"
+                style={styles.actionButton}
+                onPress={() => router.push('/grievances')}
+              >
+                View Grievances
+              </Button>
+            </View>
             
-            <TouchableOpacity 
-              className="bg-white rounded-lg p-4 mb-4 shadow-sm w-[45%] items-center"
-              onPress={() => router.push('/grievances')}
-            >
-              <Ionicons name="document-text-outline" size={28} color="#3498db" />
-              <Text className="mt-2 font-medium">View Grievances</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              className="bg-white rounded-lg p-4 mr-4 mb-4 shadow-sm w-[45%] items-center"
-              onPress={() => router.push('/attendance/reports')}
-            >
-              <Ionicons name="bar-chart-outline" size={28} color="#3498db" />
-              <Text className="mt-2 font-medium">Attendance Reports</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              className="bg-white rounded-lg p-4 mb-4 shadow-sm w-[45%] items-center"
-              onPress={() => router.push('/profile')}
-            >
-              <Ionicons name="settings-outline" size={28} color="#3498db" />
-              <Text className="mt-2 font-medium">Settings</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+            <View style={styles.actionButtonsRow}>
+              <Button 
+                variant="primary"
+                leftIcon="bar-chart-outline"
+                style={styles.actionButton}
+                onPress={() => router.push('/attendance/reports')}
+              >
+                Attendance Reports
+              </Button>
+              
+              <Button 
+                variant="primary"
+                leftIcon="settings-outline"
+                style={styles.actionButton}
+                onPress={() => router.push('/profile')}
+              >
+                Settings
+              </Button>
+            </View>
+          </CardContent>
+        </Card>
         
         {/* Grievance Stats */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold mb-3">Grievance Overview</Text>
-          <View className="flex-row flex-wrap">
+        <Card style={styles.sectionCard}>
+          <CardHeader title="Grievance Overview" />
+          <CardContent style={styles.statsContainer}>
             <DashboardCard 
               title="Pending"
               value={stats.pendingGrievances}
               icon="alert-circle-outline"
-              color="#f39c12"
+              variant="warning"
               onPress={() => router.push('/grievances?filter=pending')}
             />
             <DashboardCard 
               title="Resolved"
               value={stats.resolvedGrievances}
               icon="checkmark-circle-outline"
-              color="#2ecc71"
+              variant="success"
               onPress={() => router.push('/grievances?filter=resolved')}
             />
             <DashboardCard 
               title="Total"
               value={stats.totalGrievances}
               icon="document-text-outline"
-              color="#3498db"
+              variant="info"
               onPress={() => router.push('/grievances')}
             />
-          </View>
-        </View>
+          </CardContent>
+        </Card>
         
         {/* Attendance Stats */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold mb-3">Attendance Overview</Text>
-          <View className="flex-row flex-wrap">
+        <Card style={styles.sectionCard}>
+          <CardHeader title="Attendance Overview" />
+          <CardContent style={styles.statsContainer}>
             <DashboardCard 
               title="Avg. Attendance"
               value={`${stats.averageAttendance}%`}
               icon="analytics-outline"
-              color="#3498db"
+              variant="info"
               onPress={() => router.push('/attendance/reports')}
             />
             <DashboardCard 
               title="Low Attendance"
               value={stats.lowAttendanceStudents}
               icon="warning-outline"
-              color="#e74c3c"
+              variant="error"
               onPress={() => router.push('/attendance/low')}
             />
             <DashboardCard 
               title="Total Students"
               value={stats.totalStudents}
               icon="people-outline"
-              color="#9b59b6"
+              variant="primary"
               onPress={() => router.push('/attendance/students')}
             />
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+          </CardContent>
+        </Card>
+      </ScrollView>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollContent: {
+    padding: layout.screenPaddingHorizontal,
+    paddingBottom: spacing.xl,
+  },
+  pageTitle: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  sectionCard: {
+    marginBottom: layout.sectionSpacing,
+  },
+  quickActionsContainer: {
+    paddingHorizontal: spacing.sm,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  actionButton: {
+    width: '48%',
+    borderRadius: borderRadius.md,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+});

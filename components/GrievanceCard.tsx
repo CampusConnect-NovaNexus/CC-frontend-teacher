@@ -1,8 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Card, CardContent } from '@/components/ui/Card';
+import { ThemedText } from '@/components/ThemedText';
+import { spacing, borderRadius } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-interface Grievance {
+export interface Grievance {
   id: string;
   title: string;
   description: string;
@@ -24,59 +28,181 @@ const GrievanceCard: React.FC<GrievanceCardProps> = ({
   onPress,
   isAdmin = false
 }) => {
+  // Format the date
   const formattedDate = new Date(grievance.createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
   });
+  
+  // Get theme colors
+  const warningColor = useThemeColor({}, 'warning');
+  const successColor = useThemeColor({}, 'success');
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
+  const dividerColor = useThemeColor({}, 'divider');
+  
+  // Determine status colors
+  const getStatusColors = () => {
+    if (grievance.status === 'pending') {
+      return {
+        bg: `${warningColor}20`, // 20% opacity
+        text: warningColor
+      };
+    } else {
+      return {
+        bg: `${successColor}20`, // 20% opacity
+        text: successColor
+      };
+    }
+  };
+  
+  const statusColors = getStatusColors();
 
   return (
-    <TouchableOpacity 
-      className="bg-white rounded-lg p-4 shadow-sm"
+    <Card
+      pressable
       onPress={onPress}
+      elevation="sm"
     >
-      <View className="flex-row justify-between items-start">
-        <View className="flex-1 mr-2">
-          <Text className="text-lg font-semibold">{grievance.title}</Text>
-          <Text className="text-gray-600 mt-1" numberOfLines={2}>
-            {grievance.description}
-          </Text>
-        </View>
-        <View className={`px-2 py-1 rounded-full ${grievance.status === 'pending' ? 'bg-yellow-100' : 'bg-green-100'}`}>
-          <Text className={`text-xs font-medium ${grievance.status === 'pending' ? 'text-yellow-800' : 'text-green-800'}`}>
-            {grievance.status === 'pending' ? 'Pending' : 'Resolved'}
-          </Text>
-        </View>
-      </View>
-      
-      <View className="flex-row justify-between items-center mt-3">
-        <Text className="text-gray-500 text-xs">{formattedDate}</Text>
-        
-        <View className="flex-row">
-          <View className="flex-row items-center mr-4">
-            <Ionicons name="arrow-up-outline" size={16} color="#7f8c8d" />
-            <Text className="text-gray-500 text-xs ml-1">{grievance.upvotes}</Text>
+      <CardContent style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <ThemedText variant="headingSmall" numberOfLines={1}>
+              {grievance.title}
+            </ThemedText>
+            <ThemedText 
+              variant="bodySmall" 
+              style={[styles.description, { color: textSecondaryColor }]} 
+              numberOfLines={2}
+            >
+              {grievance.description}
+            </ThemedText>
           </View>
           
-          <View className="flex-row items-center">
-            <Ionicons name="chatbubble-outline" size={16} color="#7f8c8d" />
-            <Text className="text-gray-500 text-xs ml-1">{grievance.comments}</Text>
+          <View style={[
+            styles.statusBadge, 
+            { backgroundColor: statusColors.bg }
+          ]}>
+            <ThemedText 
+              variant="labelSmall" 
+              style={{ color: statusColors.text }}
+            >
+              {grievance.status === 'pending' ? 'Pending' : 'Resolved'}
+            </ThemedText>
           </View>
         </View>
-      </View>
-      
-      {isAdmin && (
-        <View className="mt-3 pt-3 border-t border-gray-100 flex-row justify-end">
-          {grievance.status === 'pending' && (
-            <TouchableOpacity className="flex-row items-center">
-              <Ionicons name="checkmark-circle-outline" size={16} color="#2ecc71" />
-              <Text className="text-green-600 text-xs ml-1">Mark as Resolved</Text>
-            </TouchableOpacity>
-          )}
+        
+        <View style={styles.footer}>
+          <ThemedText 
+            variant="caption" 
+            style={{ color: textSecondaryColor }}
+          >
+            {formattedDate}
+          </ThemedText>
+          
+          <View style={styles.stats}>
+            <View style={styles.statItem}>
+              <Ionicons name="arrow-up-outline" size={16} color={textSecondaryColor} />
+              <ThemedText 
+                variant="caption" 
+                style={[styles.statText, { color: textSecondaryColor }]}
+              >
+                {grievance.upvotes}
+              </ThemedText>
+            </View>
+            
+            <View style={styles.statItem}>
+              <Ionicons name="chatbubble-outline" size={16} color={textSecondaryColor} />
+              <ThemedText 
+                variant="caption" 
+                style={[styles.statText, { color: textSecondaryColor }]}
+              >
+                {grievance.comments}
+              </ThemedText>
+            </View>
+          </View>
         </View>
-      )}
-    </TouchableOpacity>
+        
+        {isAdmin && (
+          <>
+            <View style={[styles.divider, { backgroundColor: dividerColor }]} />
+            <View style={styles.adminActions}>
+              {grievance.status === 'pending' && (
+                <TouchableOpacity style={styles.resolveButton}>
+                  <Ionicons name="checkmark-circle-outline" size={16} color={successColor} />
+                  <ThemedText 
+                    variant="labelSmall" 
+                    style={[styles.resolveText, { color: successColor }]}
+                  >
+                    Mark as Resolved
+                  </ThemedText>
+                </TouchableOpacity>
+              )}
+            </View>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 };
+
+const styles = StyleSheet.create({
+  content: {
+    padding: spacing.md,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  titleContainer: {
+    flex: 1,
+    marginRight: spacing.sm,
+  },
+  description: {
+    marginTop: spacing.xs,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  stats: {
+    flexDirection: 'row',
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: spacing.md,
+  },
+  statText: {
+    marginLeft: spacing.xs,
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    marginTop: spacing.md,
+  },
+  adminActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: spacing.md,
+  },
+  resolveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  resolveText: {
+    marginLeft: spacing.xs,
+  },
+});
 
 export default GrievanceCard;

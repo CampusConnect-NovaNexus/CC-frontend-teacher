@@ -1,13 +1,63 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, Switch, Alert } from 'react-native';
+import { View, Image, StyleSheet, ScrollView, Switch, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { router } from 'expo-router';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardContent, CardDivider } from '@/components/ui/Card';
+import { spacing, layout, borderRadius } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
+
+// Profile menu item component
+interface ProfileMenuItemProps {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress?: () => void;
+  showChevron?: boolean;
+  rightElement?: React.ReactNode;
+}
+
+function ProfileMenuItem({ 
+  icon, 
+  label, 
+  onPress, 
+  showChevron = true, 
+  rightElement 
+}: ProfileMenuItemProps) {
+  const primaryColor = useThemeColor({}, 'primary');
+  const iconColor = useThemeColor({}, 'icon');
+  
+  return (
+    <TouchableOpacity 
+      style={styles.menuItem} 
+      onPress={onPress}
+      disabled={!onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+    >
+      <View style={styles.menuItemLeft}>
+        <Ionicons name={icon} size={24} color={primaryColor} style={styles.menuItemIcon} />
+        <ThemedText variant="bodyMedium">{label}</ThemedText>
+      </View>
+      
+      {rightElement || (showChevron && (
+        <Ionicons name="chevron-forward" size={20} color={iconColor} />
+      ))}
+    </TouchableOpacity>
+  );
+}
 
 export default function ProfileScreen() {
   const { logout, user } = useContext(AuthContext);
+  const { theme, toggleTheme } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  
+  // Get theme colors
+  const primaryColor = useThemeColor({}, 'primary');
+  const errorColor = useThemeColor({}, 'error');
+  const textInverseColor = useThemeColor({}, 'textInverse');
 
   const handleLogout = () => {
     Alert.alert(
@@ -31,85 +81,194 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="bg-primary p-6 items-center">
-        <View className="w-24 h-24 rounded-full overflow-hidden bg-white mb-4">
-          <Image
-            source={require('@/assets/images/profile-placeholder.png')}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
-        </View>
-        <Text className="text-white text-xl font-bold">{user?.name || 'Teacher Name'}</Text>
-        <Text className="text-white opacity-80">{user?.email || 'teacher@example.com'}</Text>
-        <Text className="text-white opacity-80 mt-1">Computer Science Department</Text>
-      </View>
-
-      <View className="p-4">
-        <View className="bg-white rounded-lg shadow-sm mb-6">
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <View className="flex-row items-center">
-              <Ionicons name="person-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">Edit Profile</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#95a5a6" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <View className="flex-row items-center">
-              <Ionicons name="key-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">Change Password</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#95a5a6" />
-          </TouchableOpacity>
-          
-          <View className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center">
-              <Ionicons name="notifications-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">Notifications</Text>
-            </View>
-            <Switch
-              value={notificationsEnabled}
-              onValueChange={setNotificationsEnabled}
-              trackColor={{ false: '#bdc3c7', true: '#3498db' }}
-              thumbColor="#ffffff"
+    <ThemedView style={styles.container}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Profile Header */}
+        <ThemedView 
+          style={styles.profileHeader}
+          lightColor={primaryColor}
+          darkColor={primaryColor}
+        >
+          <View style={styles.avatarContainer}>
+            <Image
+              source={require('@/assets/images/profile-placeholder.png')}
+              style={styles.avatar}
+              resizeMode="cover"
             />
           </View>
-        </View>
-
-        <View className="bg-white rounded-lg shadow-sm mb-6">
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <View className="flex-row items-center">
-              <Ionicons name="help-circle-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">Help & Support</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#95a5a6" />
-          </TouchableOpacity>
           
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <View className="flex-row items-center">
-              <Ionicons name="document-text-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">Terms & Policies</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#95a5a6" />
-          </TouchableOpacity>
+          <ThemedText 
+            variant="headingMedium" 
+            style={{ color: textInverseColor, marginBottom: spacing.xs }}
+          >
+            {user?.name || 'Teacher Name'}
+          </ThemedText>
           
-          <TouchableOpacity className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center">
-              <Ionicons name="information-circle-outline" size={24} color="#3498db" />
-              <Text className="ml-3 text-gray-800 font-medium">About</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#95a5a6" />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity 
-          className="bg-red-500 py-4 rounded-lg items-center mb-8"
+          <ThemedText 
+            variant="bodyMedium" 
+            style={{ color: textInverseColor, opacity: 0.9 }}
+          >
+            {user?.email || 'teacher@example.com'}
+          </ThemedText>
+          
+          <ThemedText 
+            variant="bodyMedium" 
+            style={{ color: textInverseColor, opacity: 0.9, marginTop: spacing.xs }}
+          >
+            Computer Science Department
+          </ThemedText>
+        </ThemedView>
+        
+        {/* Account Settings */}
+        <Card style={styles.card}>
+          <CardHeader title="Account Settings" />
+          <CardContent style={styles.cardContent}>
+            <ProfileMenuItem 
+              icon="person-outline" 
+              label="Edit Profile" 
+              onPress={() => {}} 
+            />
+            
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="key-outline" 
+              label="Change Password" 
+              onPress={() => {}} 
+            />
+            
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="notifications-outline" 
+              label="Notifications" 
+              showChevron={false}
+              rightElement={
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                  trackColor={{ false: '#bdc3c7', true: primaryColor }}
+                  thumbColor="#ffffff"
+                  ios_backgroundColor="#bdc3c7"
+                />
+              }
+            />
+            
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="moon-outline" 
+              label="Dark Mode" 
+              showChevron={false}
+              rightElement={
+                <Switch
+                  value={theme === 'dark'}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: '#bdc3c7', true: primaryColor }}
+                  thumbColor="#ffffff"
+                  ios_backgroundColor="#bdc3c7"
+                />
+              }
+            />
+          </CardContent>
+        </Card>
+        
+        {/* Support & Info */}
+        <Card style={styles.card}>
+          <CardHeader title="Support & Info" />
+          <CardContent style={styles.cardContent}>
+            <ProfileMenuItem 
+              icon="help-circle-outline" 
+              label="Help & Support" 
+              onPress={() => {}} 
+            />
+            
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="document-text-outline" 
+              label="Terms & Policies" 
+              onPress={() => {}} 
+            />
+            
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="information-circle-outline" 
+              label="About" 
+              onPress={() => {}} 
+            />
+          </CardContent>
+        </Card>
+        
+        {/* Logout Button */}
+        <Button
+          variant="danger"
+          size="lg"
           onPress={handleLogout}
+          fullWidth
+          style={styles.logoutButton}
+          leftIcon="log-out-outline"
         >
-          <Text className="text-white font-bold">Logout</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          Logout
+        </Button>
+      </ScrollView>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: spacing.xl,
+  },
+  profileHeader: {
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    marginBottom: spacing.md,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+  },
+  card: {
+    marginHorizontal: layout.screenPaddingHorizontal,
+    marginTop: spacing.lg,
+  },
+  cardContent: {
+    padding: 0,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuItemIcon: {
+    marginRight: spacing.md,
+  },
+  logoutButton: {
+    marginHorizontal: layout.screenPaddingHorizontal,
+    marginTop: spacing.xl,
+  },
+});

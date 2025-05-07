@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card, CardHeader, CardContent } from '@/components/ui/Card';
+import { spacing, layout, borderRadius } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface Student {
   id: string;
@@ -24,6 +31,15 @@ export default function TakeAttendanceScreen() {
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [date, setDate] = useState(new Date());
+  
+  // Get theme colors
+  const primaryColor = useThemeColor({}, 'primary');
+  const successColor = useThemeColor({}, 'success');
+  const errorColor = useThemeColor({}, 'error');
+  const infoColor = useThemeColor({}, 'info');
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
+  const borderColor = useThemeColor({}, 'border');
+  const backgroundSecondaryColor = useThemeColor({}, 'backgroundSecondary');
 
   // Mock data for classes and students
   useEffect(() => {
@@ -109,44 +125,79 @@ export default function TakeAttendanceScreen() {
   const presentCount = students.filter(student => student.present).length;
   const absentCount = students.length - presentCount;
 
-  const renderStudentItem = ({ item }: { item: Student }) => (
-    <TouchableOpacity 
-      className="flex-row items-center justify-between p-4 bg-white rounded-lg mb-2 shadow-sm"
-      onPress={() => toggleAttendance(item.id)}
-    >
-      <View className="flex-row items-center">
-        <View className={`w-10 h-10 rounded-full items-center justify-center ${item.present ? 'bg-green-100' : 'bg-red-100'}`}>
-          <Text className={`font-bold ${item.present ? 'text-green-600' : 'text-red-600'}`}>
-            {item.name.charAt(0)}
-          </Text>
+  const renderStudentItem = ({ item }: { item: Student }) => {
+    const statusBgColor = item.present ? `${successColor}20` : `${errorColor}20`;
+    const statusTextColor = item.present ? successColor : errorColor;
+    const statusIconBgColor = item.present ? successColor : errorColor;
+    
+    return (
+      <TouchableOpacity 
+        style={styles.studentItem}
+        onPress={() => toggleAttendance(item.id)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.studentInfo}>
+          <View style={[
+            styles.studentAvatar, 
+            { backgroundColor: statusBgColor }
+          ]}>
+            <ThemedText 
+              variant="labelLarge" 
+              style={{ color: statusTextColor, fontWeight: 'bold' }}
+            >
+              {item.name.charAt(0)}
+            </ThemedText>
+          </View>
+          <View style={styles.studentDetails}>
+            <ThemedText variant="bodyMedium" style={styles.studentName}>
+              {item.name}
+            </ThemedText>
+            <ThemedText 
+              variant="bodySmall" 
+              style={{ color: textSecondaryColor }}
+            >
+              {item.rollNumber}
+            </ThemedText>
+          </View>
         </View>
-        <View className="ml-3">
-          <Text className="font-medium text-gray-800">{item.name}</Text>
-          <Text className="text-gray-500 text-sm">{item.rollNumber}</Text>
+        <View style={[
+          styles.statusIndicator, 
+          { backgroundColor: statusIconBgColor }
+        ]}>
+          <Ionicons 
+            name={item.present ? 'checkmark' : 'close'} 
+            size={18} 
+            color="#ffffff" 
+          />
         </View>
-      </View>
-      <View className={`w-8 h-8 rounded-full items-center justify-center ${item.present ? 'bg-green-500' : 'bg-red-500'}`}>
-        <Ionicons 
-          name={item.present ? 'checkmark' : 'close'} 
-          size={18} 
-          color="#ffffff" 
-        />
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <View className="p-4 bg-white border-b border-gray-200">
-        <Text className="text-xl font-bold mb-4">Take Attendance</Text>
+    <ThemedView style={styles.container}>
+      <ThemedView 
+        surface="card" 
+        elevation="sm"
+        style={styles.header}
+      >
+        <ThemedText variant="headingMedium" style={styles.title}>
+          Take Attendance
+        </ThemedText>
         
-        <View className="mb-4">
-          <Text className="text-gray-700 mb-2">Select Class</Text>
-          <View className="border border-gray-300 rounded-lg overflow-hidden">
+        <View style={styles.classPickerContainer}>
+          <ThemedText variant="bodyMedium" style={styles.pickerLabel}>
+            Select Class
+          </ThemedText>
+          <View style={[
+            styles.pickerWrapper, 
+            { borderColor }
+          ]}>
             <Picker
               selectedValue={selectedClass}
               onValueChange={(itemValue) => setSelectedClass(itemValue)}
               enabled={!loading}
+              style={styles.picker}
             >
               <Picker.Item label="Select a class..." value="" />
               {classes.map(classItem => (
@@ -162,73 +213,119 @@ export default function TakeAttendanceScreen() {
         
         {selectedClass && students.length > 0 && (
           <>
-            <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
-              <Ionicons name="search" size={20} color="#95a5a6" />
-              <TextInput
-                className="flex-1 ml-2 text-gray-800"
-                placeholder="Search students..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              {searchQuery ? (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <Ionicons name="close-circle" size={20} color="#95a5a6" />
-                </TouchableOpacity>
-              ) : null}
-            </View>
+            <Input
+              placeholder="Search students..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              leftIcon="search"
+              rightIcon={searchQuery ? "close-circle" : undefined}
+              onRightIconPress={searchQuery ? () => setSearchQuery('') : undefined}
+              containerStyle={styles.searchInput}
+            />
             
-            <View className="flex-row justify-between mb-4">
-              <TouchableOpacity 
-                className="bg-green-500 py-2 px-4 rounded-lg flex-row items-center"
+            <View style={styles.actionButtonsContainer}>
+              <Button
+                variant="success"
+                size="sm"
+                leftIcon="checkmark-circle"
                 onPress={markAllPresent}
+                style={styles.actionButton}
               >
-                <Ionicons name="checkmark-circle" size={18} color="#ffffff" />
-                <Text className="text-white font-medium ml-1">Mark All Present</Text>
-              </TouchableOpacity>
+                Mark All Present
+              </Button>
               
-              <TouchableOpacity 
-                className="bg-red-500 py-2 px-4 rounded-lg flex-row items-center"
+              <Button
+                variant="danger"
+                size="sm"
+                leftIcon="close-circle"
                 onPress={markAllAbsent}
+                style={styles.actionButton}
               >
-                <Ionicons name="close-circle" size={18} color="#ffffff" />
-                <Text className="text-white font-medium ml-1">Mark All Absent</Text>
-              </TouchableOpacity>
+                Mark All Absent
+              </Button>
             </View>
             
-            <View className="flex-row justify-between mb-4 bg-gray-100 p-3 rounded-lg">
-              <View className="items-center">
-                <Text className="text-gray-600">Total</Text>
-                <Text className="text-lg font-bold">{students.length}</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-green-600">Present</Text>
-                <Text className="text-lg font-bold text-green-600">{presentCount}</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-red-600">Absent</Text>
-                <Text className="text-lg font-bold text-red-600">{absentCount}</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-blue-600">Percentage</Text>
-                <Text className="text-lg font-bold text-blue-600">
-                  {students.length > 0 ? Math.round((presentCount / students.length) * 100) : 0}%
-                </Text>
-              </View>
-            </View>
+            <Card style={styles.statsCard}>
+              <CardContent style={styles.statsContent}>
+                <View style={styles.statItem}>
+                  <ThemedText 
+                    variant="bodySmall" 
+                    style={{ color: textSecondaryColor }}
+                  >
+                    Total
+                  </ThemedText>
+                  <ThemedText variant="headingSmall">
+                    {students.length}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.statItem}>
+                  <ThemedText 
+                    variant="bodySmall" 
+                    style={{ color: successColor }}
+                  >
+                    Present
+                  </ThemedText>
+                  <ThemedText 
+                    variant="headingSmall" 
+                    style={{ color: successColor }}
+                  >
+                    {presentCount}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.statItem}>
+                  <ThemedText 
+                    variant="bodySmall" 
+                    style={{ color: errorColor }}
+                  >
+                    Absent
+                  </ThemedText>
+                  <ThemedText 
+                    variant="headingSmall" 
+                    style={{ color: errorColor }}
+                  >
+                    {absentCount}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.statItem}>
+                  <ThemedText 
+                    variant="bodySmall" 
+                    style={{ color: infoColor }}
+                  >
+                    Percentage
+                  </ThemedText>
+                  <ThemedText 
+                    variant="headingSmall" 
+                    style={{ color: infoColor }}
+                  >
+                    {students.length > 0 ? Math.round((presentCount / students.length) * 100) : 0}%
+                  </ThemedText>
+                </View>
+              </CardContent>
+            </Card>
           </>
         )}
-      </View>
+      </ThemedView>
 
       {loading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#3498db" />
+        <View style={styles.centeredContainer}>
+          <ActivityIndicator size="large" color={primaryColor} />
         </View>
       ) : !selectedClass ? (
-        <View className="flex-1 justify-center items-center p-4">
-          <Ionicons name="calendar-outline" size={60} color="#bdc3c7" />
-          <Text className="text-gray-500 mt-4 text-lg text-center">
+        <View style={styles.centeredContainer}>
+          <Ionicons 
+            name="calendar-outline" 
+            size={60} 
+            color={textSecondaryColor} 
+          />
+          <ThemedText 
+            variant="bodyLarge" 
+            style={[styles.emptyStateText, { color: textSecondaryColor }]}
+          >
             Please select a class to take attendance
-          </Text>
+          </ThemedText>
         </View>
       ) : (
         <>
@@ -236,30 +333,155 @@ export default function TakeAttendanceScreen() {
             data={filteredStudents}
             renderItem={renderStudentItem}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ padding: 16 }}
+            contentContainerStyle={styles.listContent}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
             ListEmptyComponent={
-              <View className="flex-1 justify-center items-center py-10">
-                <Ionicons name="people-outline" size={60} color="#bdc3c7" />
-                <Text className="text-gray-500 mt-4 text-lg">No students found</Text>
+              <View style={styles.centeredContainer}>
+                <Ionicons 
+                  name="people-outline" 
+                  size={60} 
+                  color={textSecondaryColor} 
+                />
+                <ThemedText 
+                  variant="bodyLarge" 
+                  style={[styles.emptyStateText, { color: textSecondaryColor }]}
+                >
+                  No students found
+                </ThemedText>
               </View>
             }
           />
           
-          <View className="p-4 bg-white border-t border-gray-200">
-            <TouchableOpacity 
-              className="bg-blue-500 py-3 rounded-lg items-center"
+          <ThemedView 
+            surface="card" 
+            elevation="sm"
+            style={styles.footer}
+          >
+            <Button
+              variant="primary"
+              size="lg"
               onPress={saveAttendance}
-              disabled={saving}
+              loading={saving}
+              fullWidth
             >
-              {saving ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Text className="text-white font-bold text-lg">Save Attendance</Text>
-              )}
-            </TouchableOpacity>
-          </View>
+              Save Attendance
+            </Button>
+          </ThemedView>
         </>
       )}
-    </View>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+  },
+  title: {
+    marginBottom: spacing.md,
+  },
+  classPickerContainer: {
+    marginBottom: spacing.md,
+  },
+  pickerLabel: {
+    marginBottom: spacing.xs,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+  },
+  searchInput: {
+    marginBottom: spacing.md,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  actionButton: {
+    width: '48%',
+  },
+  statsCard: {
+    marginBottom: spacing.md,
+  },
+  statsContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  emptyStateText: {
+    marginTop: spacing.md,
+    textAlign: 'center',
+  },
+  listContent: {
+    padding: layout.screenPaddingHorizontal,
+    paddingBottom: spacing.xl,
+  },
+  studentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    backgroundColor: 'white',
+    borderRadius: borderRadius.md,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  studentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  studentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  studentDetails: {
+    marginLeft: spacing.sm,
+  },
+  studentName: {
+    fontWeight: '500',
+  },
+  statusIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  separator: {
+    height: spacing.sm,
+  },
+  footer: {
+    padding: spacing.md,
+    borderTopWidth: 1,
+  },
+});

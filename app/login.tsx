@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { 
   View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
   Image, 
   StyleSheet, 
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Dimensions,
-  StatusBar
+  StatusBar,
+  TouchableOpacity
 } from 'react-native';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import Toast from 'react-native-toast-message';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { spacing, layout, borderRadius } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const { login, isLoading, error, clearError } = useAuth();
+  
+  // Get theme colors
+  const primaryColor = useThemeColor({}, 'primary');
+  const errorColor = useThemeColor({}, 'error');
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
 
   // Clear any auth errors when component unmounts
   useEffect(() => {
@@ -50,106 +55,128 @@ export default function LoginScreen() {
     }
   };
 
-  const toggleSecureEntry = () => {
-    setSecureTextEntry(!secureTextEntry);
-  };
-
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      <ScrollView 
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
+    <ThemedView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
       >
-        <View style={styles.headerContainer}>
-          <Image 
-            source={require('@/assets/images/logo-placeholder.png')} 
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Login to your teacher account</Text>
-        </View>
-
-        {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.headerContainer}>
+            <Image 
+              source={require('@/assets/images/logo-placeholder.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <ThemedText variant="displaySmall" style={styles.title}>
+              Welcome Back
+            </ThemedText>
+            <ThemedText variant="bodyMedium" style={{ color: textSecondaryColor }}>
+              Login to your teacher account
+            </ThemedText>
           </View>
-        )}
 
-        <View style={styles.formContainer}>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={22} color="#687076" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email Address"
-              placeholderTextColor="#9BA1A6"
+          {error && (
+            <ThemedView 
+              style={styles.errorContainer}
+              lightColor="#FFEBEE"
+            >
+              <ThemedText 
+                variant="bodySmall" 
+                style={{ color: errorColor }}
+              >
+                {error}
+              </ThemedText>
+            </ThemedView>
+          )}
+
+          <View style={styles.formContainer}>
+            <Input
+              label="Email Address"
+              leftIcon="mail-outline"
+              placeholder="Enter your email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
             />
-          </View>
 
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={22} color="#687076" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#9BA1A6"
+            <Input
+              label="Password"
+              leftIcon="lock-closed-outline"
+              placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry={secureTextEntry}
+              isPassword
               autoCapitalize="none"
             />
-            <TouchableOpacity onPress={toggleSecureEntry} style={styles.eyeIcon}>
-              <Ionicons 
-                name={secureTextEntry ? "eye-outline" : "eye-off-outline"} 
-                size={22} 
-                color="#687076" 
-              />
+
+            <TouchableOpacity style={styles.forgotPassword}>
+              <ThemedText 
+                variant="labelSmall" 
+                style={{ color: primaryColor }}
+              >
+                Forgot Password?
+              </ThemedText>
             </TouchableOpacity>
+
+            <Button
+              variant="primary"
+              size="lg"
+              onPress={handleLogin}
+              loading={isLoading}
+              fullWidth
+              style={styles.loginButton}
+            >
+              Login
+            </Button>
           </View>
 
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
+          <View style={styles.termsContainer}>
+            <ThemedText 
+              variant="caption" 
+              style={styles.termsText}
+            >
+              By logging in, you agree to our{' '}
+              <ThemedText 
+                variant="caption" 
+                style={{ color: primaryColor }}
+              >
+                Terms of Service
+              </ThemedText> and{' '}
+              <ThemedText 
+                variant="caption" 
+                style={{ color: primaryColor }}
+              >
+                Privacy Policy
+              </ThemedText>
+            </ThemedText>
+          </View>
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text style={styles.loginButtonText}>Login</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.termsContainer}>
-          <Text style={styles.termsText}>
-            By logging in, you agree to our{' '}
-            <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-            <Text style={styles.termsLink}>Privacy Policy</Text>
-          </Text>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <Link href="/register" asChild>
-            <TouchableOpacity>
-              <Text style={styles.registerLink}>Register</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View style={styles.footer}>
+            <ThemedText variant="bodyMedium">
+              Don't have an account?{' '}
+            </ThemedText>
+            <Link href="/register" asChild>
+              <TouchableOpacity>
+                <ThemedText 
+                  variant="labelLarge" 
+                  style={{ color: primaryColor }}
+                >
+                  Register
+                </ThemedText>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ThemedView>
   );
 }
 
@@ -158,123 +185,56 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 40,
+    paddingHorizontal: layout.screenPaddingHorizontal,
+    paddingTop: spacing[40],
+    paddingBottom: spacing[40],
   },
   headerContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: spacing.xl,
   },
   logo: {
     width: width * 0.25,
     height: width * 0.25,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: Colors.light.tint,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#687076',
-    textAlign: 'center',
+    marginBottom: spacing.xs,
   },
   formContainer: {
-    marginBottom: 24,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F2F3F5',
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    height: 56,
-    borderWidth: 1,
-    borderColor: '#E6E8EB',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    color: '#11181C',
-    fontSize: 16,
-    height: '100%',
-  },
-  eyeIcon: {
-    padding: 8,
+    marginBottom: spacing.xl,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
-  },
-  forgotPasswordText: {
-    color: Colors.light.tint,
-    fontSize: 14,
-    fontWeight: '500',
+    marginBottom: spacing.md,
+    marginTop: spacing.xs,
   },
   loginButton: {
-    backgroundColor: Colors.light.tint,
-    borderRadius: 12,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-    shadowColor: Colors.light.tint,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  loginButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    marginTop: spacing.md,
   },
   termsContainer: {
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
   termsText: {
-    color: '#687076',
-    fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
-  },
-  termsLink: {
-    color: Colors.light.tint,
-    fontWeight: '500',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  footerText: {
-    color: '#687076',
-    fontSize: 16,
-  },
-  registerLink: {
-    color: Colors.light.tint,
-    fontSize: 16,
-    fontWeight: 'bold',
+    alignItems: 'center',
   },
   errorContainer: {
-    backgroundColor: '#FFEBEE',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 20,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
     borderLeftColor: '#D32F2F',
-  },
-  errorText: {
-    color: '#D32F2F',
-    fontSize: 14,
   },
 });
