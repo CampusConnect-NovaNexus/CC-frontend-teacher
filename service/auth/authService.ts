@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // You'll need to set up environment variables for your API URL
 // For now, we'll use a placeholder that you can update later
-const API_URL = 'https://your-auth-api-url.com';
+const API_URL = 'https://192.168.3.76:3500';
 
 interface User {
   id: string;
@@ -19,7 +19,8 @@ interface AuthResponse {
 
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+    console.log(API_URL);
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +80,9 @@ export const register = async (
   name: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/auth/register`, {
+    console.log(API_URL);
+    
+    const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +140,7 @@ export const register = async (
 
 export const refreshToken = async (token: string): Promise<AuthResponse> => {
   try {
-    const response = await fetch(`${API_URL}/auth/refresh-token`, {
+    const response = await fetch(`${API_URL}/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
