@@ -7,6 +7,7 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -14,7 +15,7 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, name: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -35,12 +36,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const userId = await AsyncStorage.getItem('@user_id');
           const email = await AsyncStorage.getItem('@user_email');
           const name = await AsyncStorage.getItem('@user_name');
+          const role = await AsyncStorage.getItem('@user_role');
           
           if (userId && email) {
             setUser({
               id: userId,
               email: email,
-              name: name || undefined
+              name: name || undefined,
+              role: role || undefined
             });
           }
         }
@@ -64,7 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Extract user info from response or token
       const userData = response.user || { 
         id: await AsyncStorage.getItem('@user_id') || '',
-        email: email 
+        email: email,
+        role: await AsyncStorage.getItem('@user_role')
       };
       
       // Store user email and name
@@ -82,23 +86,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const handleRegister = async (email: string, password: string, name: string) => {
+  const handleRegister = async (email: string, password: string, name: string, role: string) => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const response = await register(email, password, name);
+      const response = await register(email, password, name, role);
       
       // Extract user info from response or token
       const userData = response.user || { 
         id: await AsyncStorage.getItem('@user_id') || '',
         email: email,
-        name: name
+        name: name,
+        role: role
       };
       
-      // Store user email and name
+      // Store user email, name, and role
       await AsyncStorage.setItem('@user_email', email);
       await AsyncStorage.setItem('@user_name', name);
+      await AsyncStorage.setItem('@user_role', role);
       
       setUser(userData);
       router.replace('/(tabs)');

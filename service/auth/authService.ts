@@ -1,13 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// You'll need to set up environment variables for your API URL
-// For now, we'll use a placeholder that you can update later
-const API_URL = 'https://192.168.3.76:3500';
+const API_URL = 'http://192.168.3.76:3500';
 
 interface User {
   id: string;
   email: string;
   name?: string;
+  role?: string;
 }
 
 interface AuthResponse {
@@ -19,11 +18,10 @@ interface AuthResponse {
 
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
   try {
-    console.log(API_URL);
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ email, password }),
     });
@@ -62,9 +60,13 @@ export const login = async (email: string, password: string): Promise<AuthRespon
       await AsyncStorage.setItem('@user_email', email);
     }
     
-    // Store name if available
+    // Store name and role if available
     if (data.user?.name) {
       await AsyncStorage.setItem('@user_name', data.user.name);
+    }
+    
+    if (data.user?.role) {
+      await AsyncStorage.setItem('@user_role', data.user.role);
     }
 
     return data;
@@ -77,17 +79,16 @@ export const login = async (email: string, password: string): Promise<AuthRespon
 export const register = async (
   email: string, 
   password: string, 
-  name: string
+  name: string,
+  role: string
 ): Promise<AuthResponse> => {
   try {
-    console.log(API_URL);
-    
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`${API_URL}/api/v1/auth/register`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, role }),
     });
     
     // Check if response is likely HTML instead of JSON
@@ -130,6 +131,13 @@ export const register = async (
     } else {
       await AsyncStorage.setItem('@user_name', name);
     }
+    
+    // Store role
+    if (data.user?.role) {
+      await AsyncStorage.setItem('@user_role', data.user.role);
+    } else {
+      await AsyncStorage.setItem('@user_role', role);
+    }
 
     return data;
   } catch (error: any) {
@@ -140,7 +148,7 @@ export const register = async (
 
 export const refreshToken = async (token: string): Promise<AuthResponse> => {
   try {
-    const response = await fetch(`${API_URL}/refresh-token`, {
+    const response = await fetch(`${API_URL}/auth/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -185,6 +193,7 @@ export const logout = async (): Promise<void> => {
     await AsyncStorage.removeItem('@user_id');
     await AsyncStorage.removeItem('@user_email');
     await AsyncStorage.removeItem('@user_name');
+    await AsyncStorage.removeItem('@user_role');
   } catch (error) {
     console.error('Logout error:', error);
     throw error;

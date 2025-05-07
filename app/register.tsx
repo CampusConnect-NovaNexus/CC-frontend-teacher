@@ -11,46 +11,53 @@ import {
   ScrollView, 
   ActivityIndicator,
   Dimensions,
-  StatusBar
+  StatusBar,
+  Modal,
 } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'expo-router';
-import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
+
+const ROLES = ['FACULTY', 'STAFF', 'ADMIN'];
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [role, setRole] = useState('FACULTY'); // Default role
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [secureConfirmTextEntry, setSecureConfirmTextEntry] = useState(true);
+  const [showRoleModal, setShowRoleModal] = useState(false);
   const { register, isLoading, error, clearError } = useAuth();
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleRegister = async () => {
-    if (!email || !password || !name) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'All fields are required',
-      });
+    // Clear any previous errors
+    clearError();
+    setLocalError(null);
+    
+    if (!email || !password || !name || !role) {
+      setLocalError('All fields are required');
       return;
     }
 
     if (password !== confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Passwords do not match',
-      });
+      setLocalError('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setLocalError('Password must be at least 6 characters long');
       return;
     }
 
     try {
-      await register(email, password, name);
-    } catch (err) {
-      // Error is handled in the AuthContext
+      await register(email, password, name, role);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setLocalError(err.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -60,6 +67,12 @@ export default function RegisterScreen() {
       if (error) clearError();
     };
   }, [error, clearError]);
+
+  useEffect(() => {
+    if (error) {
+      setLocalError(error);
+    }
+  }, [error]);
 
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -89,9 +102,18 @@ export default function RegisterScreen() {
           <Text style={styles.subtitle}>Join the Campus Connect teacher community</Text>
         </View>
 
-        {error && (
+        {(localError || error) && (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>{localError || error}</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                setLocalError(null);
+                clearError();
+              }}
+              style={styles.errorDismiss}
+            >
+              <Ionicons name="close" size={20} color="#D32F2F" />
+            </TouchableOpacity>
           </View>
         )}
 
@@ -122,11 +144,26 @@ export default function RegisterScreen() {
             />
           </View>
 
+          {/* Role Selection Dropdown */}
+          <TouchableOpacity 
+            style={styles.inputWrapper}
+            onPress={() => setShowRoleModal(true)}
+            disabled={isLoading}
+          >
+            <Ionicons name="people-outline" size={22} color="#687076" style={styles.inputIcon} />
+            <View style={styles.dropdownContainer}>
+              <Text style={[styles.roleDisplay, !role && styles.placeholderText]}>
+                {role || "Select Role"}
+              </Text>
+            </View>
+            <Ionicons name="chevron-down" size={22} color="#687076" style={styles.dropdownIcon} />
+          </TouchableOpacity>
+
           <View style={styles.inputWrapper}>
             <Ionicons name="lock-closed-outline" size={22} color="#687076" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder="Password (min 6 chars)"
               placeholderTextColor="#9BA1A6"
               value={password}
               onChangeText={setPassword}
@@ -192,6 +229,54 @@ export default function RegisterScreen() {
           </Link>
         </View>
       </ScrollView>
+
+      {/* Role Selection Modal */}
+      <Modal
+        visible={showRoleModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowRoleModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Role</Text>
+              <TouchableOpacity 
+                onPress={() => setShowRoleModal(false)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color="#687076" />
+              </TouchableOpacity>
+            </View>
+            
+            {ROLES.map((roleOption) => (
+              <TouchableOpacity
+                key={roleOption}
+                style={[
+                  styles.roleOption,
+                  role === roleOption && styles.selectedRoleOption
+                ]}
+                onPress={() => {
+                  setRole(roleOption);
+                  setShowRoleModal(false);
+                }}
+              >
+                <Text 
+                  style={[
+                    styles.roleText,
+                    role === roleOption && styles.selectedRoleText
+                  ]}
+                >
+                  {roleOption}
+                </Text>
+                {role === roleOption && (
+                  <Ionicons name="checkmark" size={22} color={Colors.light.tint} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -255,6 +340,9 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 8,
   },
+  errorDismiss: {
+    padding: 8,
+  },
   registerButton: {
     backgroundColor: Colors.light.tint,
     borderRadius: 12,
@@ -306,9 +394,77 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderLeftWidth: 4,
     borderLeftColor: '#D32F2F',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   errorText: {
     color: '#D32F2F',
     fontSize: 14,
+    flex: 1,
+  },
+  dropdownContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  dropdownIcon: {
+    marginLeft: 8,
+  },
+  placeholderText: {
+    color: '#9BA1A6',
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E8EB',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#11181C',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  roleOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F3F5',
+  },
+  selectedRoleOption: {
+    backgroundColor: '#F8F9FA',
+  },
+  roleText: {
+    fontSize: 16,
+    color: '#11181C',
+  },
+  selectedRoleText: {
+    color: Colors.light.tint,
+    fontWeight: '500',
+  },
+  roleDisplay: {
+    fontSize: 16,
+    color: '#11181C',
+    textAlignVertical: 'center',
   },
 });
