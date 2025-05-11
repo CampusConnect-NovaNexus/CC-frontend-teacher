@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Switch, Dimensions } from 'react-native';
+import SimpleLineChart from '@/components/SimpleLineChart';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import SimpleLineChart from '@/components/SimpleLineChart';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -84,10 +87,18 @@ export default function ClassAttendanceScreen() {
       setIsTakingAttendance(false);
       
       // Show success message
-      alert('Attendance saved successfully!');
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Attendance saved successfully!'
+      });
     } catch (error) {
       console.error('Error saving attendance:', error);
-      alert('Failed to save attendance. Please try again.');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to save attendance. Please try again.'
+      });
     } finally {
       setLoading(false);
     }

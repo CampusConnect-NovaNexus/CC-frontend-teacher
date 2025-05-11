@@ -1,19 +1,15 @@
-interface GrievanceStats {
-  pending: number;
-  resolved: number;
-  total: number;
-}
+import {EXPO_BASE_URL_GR} from '@env';
 
-// This is a mock implementation for now
-// In a real app, this would make an API call to fetch actual data
-export const fetchGrievanceStats = async (): Promise<GrievanceStats> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Return mock data
-  return {
-    pending: 5,
-    resolved: 12,
-    total: 17
-  };
+export const getStats = async () => {
+    const BASEURL=EXPO_BASE_URL_GR
+    console.log('BASEURL : ',BASEURL);
+    
+  try {
+    console.log(BASEURL);
+    const response = await fetch(`${BASEURL}/stats`);
+    const data=await response.json();
+    return data;
+  } catch (error) {
+    console.error('Unable to fetch Stats at the moment');
+  }
 };

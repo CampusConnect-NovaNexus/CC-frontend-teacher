@@ -1,205 +1,312 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
 import SimpleLineChart from '@/components/SimpleLineChart';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { layout, spacing } from '@/constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { getAttendanceStats } from '@/service/attendance/getAttendanceStats';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
-
-interface Student {
-  id: string;
-  name: string;
-  rollNumber: string;
-  email: string;
-  phone?: string;
-  department: string;
-  year: number;
-  attendancePercentage: number;
-  attendanceHistory: {
-    date: string;
-    status: 'present' | 'absent' | 'late';
-    class: string;
-  }[];
-}
-
-interface AttendanceByMonth {
-  month: string;
-  percentage: number;
+interface AttendanceStatsType {
+  student_id: string;
+  student_name: string;
+  roll_no: string;
+  course_code: string;
+  total_classes: number;
+  attended_classes: number;
+  attendance_percentage: number;
+  start_date?: string;
+  end_date?: string;
 }
 
 export default function StudentDetailScreen() {
-  const params = useLocalSearchParams();
-  const studentId = params.id as string;
-  
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [student, setStudent] = useState<Student | null>(null);
-  const [monthlyAttendance, setMonthlyAttendance] = useState<AttendanceByMonth[]>([]);
-  
+  const [stats, setStats] = useState<AttendanceStatsType | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const primaryColor = useThemeColor({}, 'primary');
+  const successColor = useThemeColor({}, 'success');
+  const errorColor = useThemeColor({}, 'error');
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
+
   useEffect(() => {
-    loadStudentDetails();
-  }, [studentId]);
-  
-  const loadStudentDetails = async () => {
+    fetchStats();
+  }, [id, startDate, endDate]);
+
+  const fetchStats = async () => {
+    if (!id) return;
+    
     try {
       setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Generate mock attendance history
-      const today = new Date();
-      const attendanceHistory = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date();
-        date.setDate(today.getDate() - i);
-        
-        // Randomly assign status with 80% chance of present
-        const rand = Math.random();
-        let status: 'present' | 'absent' | 'late';
-        if (rand < 0.8) {
-          status = 'present';
-        } else if (rand < 0.9) {
-          status = 'late';
-        } else {
-          status = 'absent';
-        }
-        
-        return {
-          date: date.toISOString(),
-          status,
-          class: ['Computer Science', 'Data Structures', 'Database Systems', 'Web Development'][Math.floor(Math.random() * 4)]
-        };
-      });
-      
-      // Mock student data
-      const mockStudent: Student = {
-        id: studentId,
-        name: `Student ${parseInt(studentId.split('-')[1])}`,
-        rollNumber: `CS${Math.floor(Math.random() * 4) + 1}${Math.floor(Math.random() * 100)}`,
-        email: `student${parseInt(studentId.split('-')[1])}@example.com`,
-        phone: Math.random() > 0.3 ? `+1 ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}` : undefined,
-        department: 'Computer Science',
-        year: Math.floor(Math.random() * 4) + 1,
-        attendancePercentage: Math.floor(Math.random() * 30) + 70, // 70-99%
-        attendanceHistory
-      };
-      
-      setStudent(mockStudent);
-      
-      // Generate monthly attendance data
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-      const mockMonthlyData = months.map(month => ({
-        month,
-        percentage: Math.floor(Math.random() * 30) + 70 // 70-99%
-      }));
-      
-      setMonthlyAttendance(mockMonthlyData);
+      setError(null);
+      const statsData = await getAttendanceStats(
+        id, 
+        startDate ? startDate.toISOString() : undefined, 
+        endDate ? endDate.toISOString() : undefined
+      );
+      setStats(statsData);
+      setLoading(false);
     } catch (error) {
-      console.error('Error loading student details:', error);
-    } finally {
+      console.error('Error fetching attendance stats:', error);
+      setError('Failed to load attendance statistics');
       setLoading(false);
     }
   };
-  
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'present': return 'bg-green-100 text-green-800';
-      case 'late': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-red-100 text-red-800';
+
+  const handleStartDateChange = (event: any, selectedDate?: Date) => {
+    setShowStartPicker(false);
+    if (selectedDate) {
+      setStartDate(selectedDate);
     }
   };
-  
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#3498db" />
-      </View>
-    );
-  }
-  
-  if (!student) {
-    return (
-      <View className="flex-1 justify-center items-center bg-gray-50 p-4">
-        <Text className="text-lg text-gray-600">Student not found</Text>
-        <TouchableOpacity 
-          className="mt-4 bg-blue-500 px-4 py-2 rounded-lg"
-          onPress={() => router.back()}
-        >
-          <Text className="text-white font-medium">Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-  
+
+  const handleEndDateChange = (event: any, selectedDate?: Date) => {
+    setShowEndPicker(false);
+    if (selectedDate) {
+      setEndDate(selectedDate);
+    }
+  };
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Select date';
+    return date.toISOString().split('T')[0];
+  };
+
+  const clearDateFilters = () => {
+    setStartDate(null);
+    setEndDate(null);
+  };
+
   return (
-    <View className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1">
-        <View className="p-4">
-          <View className="flex-row items-center mb-6">
-            <TouchableOpacity onPress={() => router.back()} className="mr-3">
-              <Ionicons name="arrow-back" size={24} color="#333" />
-            </TouchableOpacity>
-            <Text className="text-2xl font-bold">Student Details</Text>
-          </View>
-          
-          <View className="bg-white p-4 rounded-lg shadow-sm mb-4">
-            <Text className="text-xl font-bold mb-2">{student.name}</Text>
-            <Text className="text-gray-600 mb-1">Roll Number: {student.rollNumber}</Text>
-            <Text className="text-gray-600 mb-1">Email: {student.email}</Text>
-            {student.phone && <Text className="text-gray-600 mb-1">Phone: {student.phone}</Text>}
-            <Text className="text-gray-600 mb-1">Department: {student.department}</Text>
-            <Text className="text-gray-600 mb-1">Year: {student.year}</Text>
-            
-            <View className="mt-3 flex-row items-center">
-              <Text className="text-gray-700 font-semibold mr-2">Attendance:</Text>
-              <View className={`px-3 py-1 rounded-full ${student.attendancePercentage < 75 ? 'bg-red-100' : 'bg-green-100'}`}>
-                <Text className={`text-sm font-medium ${student.attendancePercentage < 75 ? 'text-red-800' : 'text-green-800'}`}>
-                  {student.attendancePercentage}%
-                </Text>
-              </View>
+    <ThemedView style={styles.container}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <ThemedText variant="headingMedium" style={styles.pageTitle}>
+          Student Attendance Details
+        </ThemedText>
+
+        <Card style={styles.card}>
+          <CardHeader title="Date Range Filter" />
+          <CardContent>
+            <View style={styles.dateFilterRow}>
+              <Button 
+                variant="outline"
+                onPress={() => setShowStartPicker(true)}
+                style={styles.dateButton}
+              >
+                Start: {formatDate(startDate)}
+              </Button>
+              
+              <Button 
+                variant="outline"
+                onPress={() => setShowEndPicker(true)}
+                style={styles.dateButton}
+              >
+                End: {formatDate(endDate)}
+              </Button>
             </View>
+            
+            {(startDate || endDate) && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onPress={clearDateFilters}
+                style={styles.clearButton}
+              >
+                Clear Filters
+              </Button>
+            )}
+            
+            {showStartPicker && (
+              <DateTimePicker
+                value={startDate || new Date()}
+                mode="date"
+                display="default"
+                onChange={handleStartDateChange}
+              />
+            )}
+            
+            {showEndPicker && (
+              <DateTimePicker
+                value={endDate || new Date()}
+                mode="date"
+                display="default"
+                onChange={handleEndDateChange}
+              />
+            )}
+          </CardContent>
+        </Card>
+
+        {loading ? (
+          <View style={styles.centeredContainer}>
+            <ActivityIndicator size="large" color={primaryColor} />
           </View>
-          
-          <View className="bg-white p-4 rounded-lg shadow-sm mb-4">
-            <Text className="text-lg font-semibold mb-3">Attendance Trend</Text>
-            <SimpleLineChart
-              data={monthlyAttendance.map(item => item.percentage)}
-              labels={monthlyAttendance.map(item => item.month)}
-              width={screenWidth - 40}
-              height={220}
-              color="#3498db"
-              title="Monthly Attendance (%)"
-              backgroundColor="#ffffff"
-            />
+        ) : error ? (
+          <View style={styles.centeredContainer}>
+            <ThemedText variant="bodyLarge" style={{ color: errorColor }}>
+              {error}
+            </ThemedText>
           </View>
-          
-          <Text className="text-lg font-semibold mb-3">Attendance History</Text>
-          
-          {student.attendanceHistory.map((record, index) => (
-            <View key={index} className="bg-white p-4 rounded-lg shadow-sm mb-3">
-              <View className="flex-row justify-between items-center">
-                <View>
-                  <Text className="font-semibold">{formatDate(record.date)}</Text>
-                  <Text className="text-gray-600 text-sm">{record.class}</Text>
+        ) : !stats ? (
+          <View style={styles.centeredContainer}>
+            <ThemedText variant="bodyLarge" style={{ color: textSecondaryColor }}>
+              No attendance data available
+            </ThemedText>
+          </View>
+        ) : (
+          <Card style={styles.container}>
+            <CardHeader title={`Attendance Statistics: ${stats.student_name}`} />
+            <CardContent>
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                    Roll Number
+                  </ThemedText>
+                  <ThemedText variant="bodyLarge">
+                    {stats.roll_no}
+                  </ThemedText>
                 </View>
                 
-                <View className={`px-3 py-1 rounded-full ${getStatusColor(record.status)}`}>
-                  <Text className={`text-sm font-medium capitalize ${getStatusColor(record.status).split(' ')[1]}`}>
-                    {record.status}
-                  </Text>
+                <View style={styles.statItem}>
+                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                    Course
+                  </ThemedText>
+                  <ThemedText variant="bodyLarge">
+                    {stats.course_code}
+                  </ThemedText>
                 </View>
               </View>
-            </View>
-          ))}
-        </View>
+              
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                    Total Classes
+                  </ThemedText>
+                  <ThemedText variant="bodyLarge">
+                    {stats.total_classes}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.statItem}>
+                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                    Attended Classes
+                  </ThemedText>
+                  <ThemedText variant="bodyLarge">
+                    {stats.attended_classes}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.statItem}>
+                  <ThemedText 
+                    variant="bodySmall" 
+                    style={{ 
+                      color: stats.attendance_percentage >= 75 ? successColor : errorColor 
+                    }}
+                  >
+                    Attendance
+                  </ThemedText>
+                  <ThemedText 
+                    variant="headingSmall" 
+                    style={{ 
+                      color: stats.attendance_percentage >= 75 ? successColor : errorColor 
+                    }}
+                  >
+                    {stats.attendance_percentage.toFixed(1)}%
+                  </ThemedText>
+                </View>
+              </View>
+              
+              {stats.start_date && stats.end_date && (
+                <View style={styles.dateRange}>
+                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                    Period: {new Date(stats.start_date).toLocaleDateString()} - {new Date(stats.end_date).toLocaleDateString()}
+                  </ThemedText>
+                </View>
+              )}
+              
+              <SimpleLineChart
+                data={[stats.attendance_percentage]}
+                labels={['Attendance']}
+                width={300}
+                height={200}
+                color={stats.attendance_percentage >= 75 ? successColor : errorColor}
+                title="Attendance Percentage"
+              />
+            </CardContent>
+          </Card>
+        )}
+        
+        <Button
+          variant="secondary"
+          leftIcon="arrow-back"
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          Back
+        </Button>
       </ScrollView>
-    </View>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: spacing.lg,
+  },
+  scrollContent: {
+    padding: layout.screenPaddingHorizontal,
+    paddingBottom: spacing.xl,
+  },
+  pageTitle: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  card: {
+    marginBottom: spacing.lg,
+  },
+  dateFilterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
+  dateButton: {
+    width: '48%',
+  },
+  clearButton: {
+    alignSelf: 'flex-end',
+  },
+  backButton: {
+    marginTop: spacing.lg,
+  },
+  centeredContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+    minHeight: 200,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  dateRange: {
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+});

@@ -1,15 +1,16 @@
-import React, { useContext, useState } from 'react';
-import { View, Image, StyleSheet, ScrollView, Switch, Alert, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
-import { router } from 'expo-router';
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardContent, CardDivider } from '@/components/ui/Card';
-import { spacing, layout, borderRadius } from '@/constants/Spacing';
+import { Card, CardContent, CardDivider, CardHeader } from '@/components/ui/Card';
+import { layout, spacing } from '@/constants/Spacing';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 // Profile menu item component
 interface ProfileMenuItemProps {
@@ -50,34 +51,56 @@ function ProfileMenuItem({
 }
 
 export default function ProfileScreen() {
-  const { logout, user } = useContext(AuthContext);
+  // const { logout, user } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  
+  const [refreshing, setRefreshing] = useState(false);
   // Get theme colors
   const primaryColor = useThemeColor({}, 'primary');
   const errorColor = useThemeColor({}, 'error');
   const textInverseColor = useThemeColor({}, 'textInverse');
+  
+  const onRefresh = () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      
+      setRefreshing(false);
+    }, 2000);
+  };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Logout',
-          onPress: () => {
-            logout();
-            router.replace('/login');
+    Toast.show({
+      type: 'info',
+      text1: 'Logout',
+      text2: 'Are you sure you want to logout?',
+      position: 'top',
+      bottomOffset: 100,
+      autoHide: false,
+      onPress: () => {
+        Toast.hide();
+        logout();
+              router.replace('/login');
+      },
+      onHide: () => {},
+      props: {
+        buttons: [
+          {
+            text: 'Cancel',
+            onPress: () => Toast.hide()
           },
-          style: 'destructive',
-        },
-      ]
-    );
+          {
+            text: 'Logout',
+            onPress: () => {
+              Toast.hide();
+              logout();
+              router.replace('/login');
+            }
+          }
+        ]
+      }
+    });
   };
 
   return (
@@ -94,7 +117,7 @@ export default function ProfileScreen() {
         >
           <View style={styles.avatarContainer}>
             <Image
-              source={require('@/assets/images/profile-placeholder.png')}
+              source={require('@/assets/images/logo.png')}
               style={styles.avatar}
               resizeMode="cover"
             />
@@ -176,33 +199,7 @@ export default function ProfileScreen() {
           </CardContent>
         </Card>
         
-        {/* Support & Info */}
-        <Card style={styles.card}>
-          <CardHeader title="Support & Info" />
-          <CardContent style={styles.cardContent}>
-            <ProfileMenuItem 
-              icon="help-circle-outline" 
-              label="Help & Support" 
-              onPress={() => {}} 
-            />
-            
-            <CardDivider />
-            
-            <ProfileMenuItem 
-              icon="document-text-outline" 
-              label="Terms & Policies" 
-              onPress={() => {}} 
-            />
-            
-            <CardDivider />
-            
-            <ProfileMenuItem 
-              icon="information-circle-outline" 
-              label="About" 
-              onPress={() => {}} 
-            />
-          </CardContent>
-        </Card>
+        
         
         {/* Logout Button */}
         <Button
@@ -210,7 +207,7 @@ export default function ProfileScreen() {
           size="lg"
           onPress={handleLogout}
           fullWidth
-          style={styles.logoutButton}
+          className='logoutButton mt-10 w-[30%] ' 
           leftIcon="log-out-outline"
         >
           Logout

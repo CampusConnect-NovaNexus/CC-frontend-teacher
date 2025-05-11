@@ -94,7 +94,7 @@ export default function RegisterScreen() {
       >
         <View style={styles.headerContainer}>
           <Image 
-            source={require('@/assets/images/logo-placeholder.png')} 
+            source={require('@/assets/images/logo.png')} 
             style={styles.logo}
             resizeMode="contain"
           />

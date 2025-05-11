@@ -51,7 +51,7 @@ export default function GrievanceDetailScreen() {
       const mockGrievance: Grievance = {
         id: grievanceId,
         title: 'Issue with Course Registration',
-        description: 'I am unable to register for the Advanced Database course. The system shows an error saying "Prerequisites not met" but I have completed all the required courses.',
+        description: 'I am unable to register for the Advanced Database course.  The system shows an error saying "Prerequisites not met" but I have completed all the required courses.',
         studentName: 'Alex Johnson',
         studentId: 'student-123',
         status: 'pending',

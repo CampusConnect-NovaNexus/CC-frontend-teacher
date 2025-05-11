@@ -1,9 +1,8 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
-import { router } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
+import { router, Tabs } from 'expo-router';
+import React from 'react';
 import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
