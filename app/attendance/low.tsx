@@ -34,34 +34,7 @@ export default function LowAttendanceScreen() {
           className: 'Computer Science - CS101',
           attendancePercentage: 65
         },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          rollNumber: 'CS102',
-          className: 'Computer Science - CS101',
-          attendancePercentage: 70
-        },
-        {
-          id: '3',
-          name: 'Michael Johnson',
-          rollNumber: 'CS201',
-          className: 'Data Structures - CS201',
-          attendancePercentage: 68
-        },
-        {
-          id: '4',
-          name: 'Emily Williams',
-          rollNumber: 'CS301',
-          className: 'Database Systems - CS301',
-          attendancePercentage: 72
-        },
-        {
-          id: '5',
-          name: 'David Brown',
-          rollNumber: 'CS401',
-          className: 'Web Development - CS401',
-          attendancePercentage: 69
-        }
+        
       ];
       
       setStudents(mockStudents);

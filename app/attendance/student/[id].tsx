@@ -1,15 +1,49 @@
 import SimpleLineChart from '@/components/SimpleLineChart';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { layout, spacing } from '@/constants/Spacing';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { getAttendanceStats } from '@/service/attendance/getAttendanceStats';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+// Light mode colors
+const COLORS = {
+  primary: '#4361ee',
+  secondary: '#3f37c9',
+  success: '#10b981',
+  error: '#f44336',
+  background: '#ffffff',
+  card: '#ffffff',
+  text: '#1a1a1a',
+  textSecondary: '#666666',
+  border: '#e0e0e0',
+  divider: '#e0e0e0',
+};
+
+// Card components
+function Card({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <View className={`bg-white rounded-lg shadow-md border border-gray-200 mb-4 overflow-hidden ${className || ''}`}>
+      {children}
+    </View>
+  );
+}
+
+function CardHeader({ title }: { title: string }) {
+  return (
+    <View className="p-4 border-b border-gray-200">
+      <Text className="text-lg font-semibold text-gray-800">{title}</Text>
+    </View>
+  );
+}
+
+function CardContent({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <View className={`p-4 ${className || ''}`}>
+      {children}
+    </View>
+  );
+}
 
 interface AttendanceStatsType {
   student_id: string;
@@ -32,11 +66,6 @@ export default function StudentDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<AttendanceStatsType | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const primaryColor = useThemeColor({}, 'primary');
-  const successColor = useThemeColor({}, 'success');
-  const errorColor = useThemeColor({}, 'error');
-  const textSecondaryColor = useThemeColor({}, 'textSecondary');
 
   useEffect(() => {
     fetchStats();
@@ -87,45 +116,44 @@ export default function StudentDetailScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View className="flex-1 bg-white mb-4">
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1 px-4 pb-8"
       >
-        <ThemedText variant="headingMedium" style={styles.pageTitle}>
+        <Text className="text-xl font-semibold text-gray-800 mt-4 mb-2">
           Student Attendance Details
-        </ThemedText>
+        </Text>
 
-        <Card style={styles.card}>
+        <Card>
           <CardHeader title="Date Range Filter" />
           <CardContent>
-            <View style={styles.dateFilterRow}>
-              <Button 
-                variant="outline"
+            <View className="flex-row justify-between mb-2">
+              <TouchableOpacity 
+                className="border border-blue-600 rounded-md py-2 px-4 w-[48%] items-center"
                 onPress={() => setShowStartPicker(true)}
-                style={styles.dateButton}
+                activeOpacity={0.7}
               >
-                Start: {formatDate(startDate)}
-              </Button>
+                <Text className="text-blue-600">Start: {formatDate(startDate)}</Text>
+              </TouchableOpacity>
               
-              <Button 
-                variant="outline"
+              <TouchableOpacity 
+                className="border border-blue-600 rounded-md py-2 px-4 w-[48%] items-center"
                 onPress={() => setShowEndPicker(true)}
-                style={styles.dateButton}
+                activeOpacity={0.7}
               >
-                End: {formatDate(endDate)}
-              </Button>
+                <Text className="text-blue-600">End: {formatDate(endDate)}</Text>
+              </TouchableOpacity>
             </View>
             
             {(startDate || endDate) && (
-              <Button
-                variant="secondary"
-                size="sm"
+              <TouchableOpacity
+                className="bg-blue-700 rounded-md py-1 px-3 self-end"
                 onPress={clearDateFilters}
-                style={styles.clearButton}
+                activeOpacity={0.7}
               >
-                Clear Filters
-              </Button>
+                <Text className="text-white text-sm font-medium">Clear Filters</Text>
+              </TouchableOpacity>
             )}
             
             {showStartPicker && (
@@ -149,89 +177,83 @@ export default function StudentDetailScreen() {
         </Card>
 
         {loading ? (
-          <View style={styles.centeredContainer}>
-            <ActivityIndicator size="large" color={primaryColor} />
+          <View className="justify-center items-center p-4 min-h-[200px]">
+            <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
         ) : error ? (
-          <View style={styles.centeredContainer}>
-            <ThemedText variant="bodyLarge" style={{ color: errorColor }}>
+          <View className="justify-center items-center p-4 min-h-[200px]">
+            <Text className="text-lg text-red-500">
               {error}
-            </ThemedText>
+            </Text>
           </View>
         ) : !stats ? (
-          <View style={styles.centeredContainer}>
-            <ThemedText variant="bodyLarge" style={{ color: textSecondaryColor }}>
+          <View className="justify-center items-center p-4 min-h-[200px]">
+            <Text className="text-lg text-gray-500">
               No attendance data available
-            </ThemedText>
+            </Text>
           </View>
         ) : (
-          <Card style={styles.container}>
+          <Card>
             <CardHeader title={`Attendance Statistics: ${stats.student_name}`} />
             <CardContent>
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}>
-                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+              <View className="flex-row justify-between mb-4">
+                <View className="items-center flex-1">
+                  <Text className="text-sm text-gray-500">
                     Roll Number
-                  </ThemedText>
-                  <ThemedText variant="bodyLarge">
+                  </Text>
+                  <Text className="text-lg">
                     {stats.roll_no}
-                  </ThemedText>
+                  </Text>
                 </View>
                 
-                <View style={styles.statItem}>
-                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                <View className="items-center flex-1">
+                  <Text className="text-sm text-gray-500">
                     Course
-                  </ThemedText>
-                  <ThemedText variant="bodyLarge">
+                  </Text>
+                  <Text className="text-lg">
                     {stats.course_code}
-                  </ThemedText>
+                  </Text>
                 </View>
               </View>
               
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}>
-                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+              <View className="flex-row justify-between mb-4">
+                <View className="items-center flex-1">
+                  <Text className="text-sm text-gray-500">
                     Total Classes
-                  </ThemedText>
-                  <ThemedText variant="bodyLarge">
+                  </Text>
+                  <Text className="text-lg">
                     {stats.total_classes}
-                  </ThemedText>
+                  </Text>
                 </View>
                 
-                <View style={styles.statItem}>
-                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                <View className="items-center flex-1">
+                  <Text className="text-sm text-gray-500">
                     Attended Classes
-                  </ThemedText>
-                  <ThemedText variant="bodyLarge">
+                  </Text>
+                  <Text className="text-lg">
                     {stats.attended_classes}
-                  </ThemedText>
+                  </Text>
                 </View>
                 
-                <View style={styles.statItem}>
-                  <ThemedText 
-                    variant="bodySmall" 
-                    style={{ 
-                      color: stats.attendance_percentage >= 75 ? successColor : errorColor 
-                    }}
+                <View className="items-center flex-1">
+                  <Text 
+                    className={`text-sm ${stats.attendance_percentage >= 75 ? 'text-green-600' : 'text-red-500'}`}
                   >
                     Attendance
-                  </ThemedText>
-                  <ThemedText 
-                    variant="headingSmall" 
-                    style={{ 
-                      color: stats.attendance_percentage >= 75 ? successColor : errorColor 
-                    }}
+                  </Text>
+                  <Text 
+                    className={`text-lg font-semibold ${stats.attendance_percentage >= 75 ? 'text-green-600' : 'text-red-500'}`}
                   >
                     {stats.attendance_percentage.toFixed(1)}%
-                  </ThemedText>
+                  </Text>
                 </View>
               </View>
               
               {stats.start_date && stats.end_date && (
-                <View style={styles.dateRange}>
-                  <ThemedText variant="bodySmall" style={{ color: textSecondaryColor }}>
+                <View className="items-center mb-4">
+                  <Text className="text-sm text-gray-500">
                     Period: {new Date(stats.start_date).toLocaleDateString()} - {new Date(stats.end_date).toLocaleDateString()}
-                  </ThemedText>
+                  </Text>
                 </View>
               )}
               
@@ -240,73 +262,23 @@ export default function StudentDetailScreen() {
                 labels={['Attendance']}
                 width={300}
                 height={200}
-                color={stats.attendance_percentage >= 75 ? successColor : errorColor}
+                color={stats.attendance_percentage >= 75 ? COLORS.success : COLORS.error}
                 title="Attendance Percentage"
               />
             </CardContent>
           </Card>
         )}
         
-        <Button
-          variant="secondary"
-          leftIcon="arrow-back"
+        <TouchableOpacity
+          className="bg-blue-700 rounded-md py-2 px-4 flex-row items-center mt-4"
           onPress={() => router.back()}
-          style={styles.backButton}
+          activeOpacity={0.7}
         >
-          Back
-        </Button>
+          <Ionicons name="arrow-back" size={20} color="white" style={{ marginRight: 8 }} />
+          <Text className="text-white font-medium">Back</Text>
+        </TouchableOpacity>
       </ScrollView>
-    </ThemedView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginBottom: spacing.lg,
-  },
-  scrollContent: {
-    padding: layout.screenPaddingHorizontal,
-    paddingBottom: spacing.xl,
-  },
-  pageTitle: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  card: {
-    marginBottom: spacing.lg,
-  },
-  dateFilterRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.sm,
-  },
-  dateButton: {
-    width: '48%',
-  },
-  clearButton: {
-    alignSelf: 'flex-end',
-  },
-  backButton: {
-    marginTop: spacing.lg,
-  },
-  centeredContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-    minHeight: 200,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  dateRange: {
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-});

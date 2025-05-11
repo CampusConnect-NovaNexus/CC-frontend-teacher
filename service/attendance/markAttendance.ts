@@ -16,9 +16,10 @@ export const markAttendance = async (body: AttendanceBody) => {
       },
       body: JSON.stringify(body)
     });
-    
+    const data = await response.json();
+    console.log('Attendance marked successfully:', data);
 
-    return await response.json();
+    return data;
   } catch (error) {
     console.error('Error marking attendance:', error);
     throw error;
