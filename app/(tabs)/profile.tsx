@@ -92,7 +92,6 @@ export default function ProfileScreen() {
   
   const onRefresh = () => {
     setRefreshing(true);
-
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);

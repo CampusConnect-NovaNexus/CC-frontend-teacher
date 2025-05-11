@@ -26,14 +26,15 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         // Tab bar styling
-        tabBarActiveTintColor: primary,
+        tabBarActiveTintColor: '#000',
         tabBarInactiveTintColor: tabIconDefault,
         tabBarStyle: {
           height: 60,
+          paddingTop: 5,
           paddingBottom: 10,
           backgroundColor: tabBackground,
           borderTopColor: useThemeColor({}, 'border'),
-          elevation: 8,
+          elevation: 10,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.1,
@@ -42,7 +43,7 @@ export default function TabLayout() {
         
         // Header styling
         headerStyle: {
-          backgroundColor: primary,
+          backgroundColor: '#d4d4d4',
         },
         headerTintColor: textInverse,
         headerTitleStyle: {
@@ -63,6 +64,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Dashboard',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
