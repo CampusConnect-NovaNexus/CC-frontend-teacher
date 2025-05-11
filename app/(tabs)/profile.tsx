@@ -33,14 +33,14 @@ function ProfileMenuItem({
   
   return (
     <TouchableOpacity 
-      style={styles.menuItem} 
+      style={[styles.menuItem, { backgroundColor: '#FFFFFF' }]} 
       onPress={onPress}
       disabled={!onPress}
       activeOpacity={onPress ? 0.7 : 1}
     >
       <View style={styles.menuItemLeft}>
         <Ionicons name={icon} size={24} color={primaryColor} style={styles.menuItemIcon} />
-        <ThemedText variant="bodyMedium">{label}</ThemedText>
+        <ThemedText variant="bodyMedium" style={{ color: '#000000' }}>{label}</ThemedText>
       </View>
       
       {rightElement || (showChevron && (
@@ -51,21 +51,15 @@ function ProfileMenuItem({
 }
 
 export default function ProfileScreen() {
-  // const { logout, user } = useContext(AuthContext);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  // Get theme colors
   const primaryColor = useThemeColor({}, 'primary');
-  const errorColor = useThemeColor({}, 'error');
-  const textInverseColor = useThemeColor({}, 'textInverse');
   
   const onRefresh = () => {
     setRefreshing(true);
-
     setTimeout(() => {
-      
       setRefreshing(false);
     }, 2000);
   };
@@ -81,7 +75,7 @@ export default function ProfileScreen() {
       onPress: () => {
         Toast.hide();
         logout();
-              router.replace('/login');
+        router.replace('/login');
       },
       onHide: () => {},
       props: {
@@ -104,16 +98,14 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { backgroundColor: '#F5F5F5' }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Profile Header */}
         <ThemedView 
-          style={styles.profileHeader}
-          lightColor={primaryColor}
-          darkColor={primaryColor}
+          style={[styles.profileHeader, { backgroundColor: '#FFFFFF' }]}
         >
           <View style={styles.avatarContainer}>
             <Image
@@ -125,28 +117,28 @@ export default function ProfileScreen() {
           
           <ThemedText 
             variant="headingMedium" 
-            style={{ color: textInverseColor, marginBottom: spacing.xs }}
+            style={{ color: '#000000', marginBottom: spacing.xs }}
           >
             {user?.name || 'Teacher Name'}
           </ThemedText>
           
           <ThemedText 
             variant="bodyMedium" 
-            style={{ color: textInverseColor, opacity: 0.9 }}
+            style={{ color: '#333333' }}
           >
             {user?.email || 'teacher@example.com'}
           </ThemedText>
           
           <ThemedText 
             variant="bodyMedium" 
-            style={{ color: textInverseColor, opacity: 0.9, marginTop: spacing.xs }}
+            style={{ color: '#333333', marginTop: spacing.xs }}
           >
             Computer Science Department
           </ThemedText>
         </ThemedView>
         
         {/* Account Settings */}
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: '#FFFFFF' }]}>
           <CardHeader title="Account Settings" />
           <CardContent style={styles.cardContent}>
             <ProfileMenuItem 
@@ -199,16 +191,11 @@ export default function ProfileScreen() {
           </CardContent>
         </Card>
         
-        
-        
         {/* Logout Button */}
         <Button
           variant="danger"
-          size="lg"
           onPress={handleLogout}
-          fullWidth
-          className='logoutButton mt-10 w-[30%] ' 
-          leftIcon="log-out-outline"
+          style={styles.logoutButton}
         >
           Logout
         </Button>
@@ -222,11 +209,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: spacing.xl,
+    padding: spacing.md,
   },
   profileHeader: {
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: 12,
+    marginBottom: spacing.md,
     alignItems: 'center',
   },
   avatarContainer: {
@@ -234,18 +222,17 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     overflow: 'hidden',
-    backgroundColor: 'white',
     marginBottom: spacing.md,
-    borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
   },
   avatar: {
     width: '100%',
     height: '100%',
   },
   card: {
-    marginHorizontal: layout.screenPaddingHorizontal,
-    marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
   cardContent: {
     padding: 0,
@@ -254,18 +241,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
+    padding: spacing.md,
   },
   menuItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   menuItemIcon: {
-    marginRight: spacing.md,
+    marginRight: spacing.sm,
   },
   logoutButton: {
-    marginHorizontal: layout.screenPaddingHorizontal,
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
   },
 });

@@ -1,163 +1,91 @@
 /**
  * Modern color system for Campus Connect Teacher App
- * This design system follows a consistent color palette across light and dark modes
+ * Using darker, more distinct colors for better visibility
  */
-
-// Primary colors
-const primary = {
-  50: '#e3f2fd',
-  100: '#bbdefb',
-  200: '#90caf9',
-  300: '#64b5f6',
-  400: '#42a5f5',
-  500: '#2196f3', // Main primary color
-  600: '#1e88e5',
-  700: '#1976d2',
-  800: '#1565c0',
-  900: '#0d47a1',
-};
-
-// Secondary colors (accent)
-const secondary = {
-  50: '#e8f5e9',
-  100: '#c8e6c9',
-  200: '#a5d6a7',
-  300: '#81c784',
-  400: '#66bb6a',
-  500: '#4caf50', // Main secondary color
-  600: '#43a047',
-  700: '#388e3c',
-  800: '#2e7d32',
-  900: '#1b5e20',
-};
-
-// Neutral colors
-const neutral = {
-  50: '#fafafa',
-  100: '#f5f5f5',
-  200: '#eeeeee',
-  300: '#e0e0e0',
-  400: '#bdbdbd',
-  500: '#9e9e9e',
-  600: '#757575',
-  700: '#616161',
-  800: '#424242',
-  900: '#212121',
-};
-
-// Semantic colors
-const semantic = {
-  success: '#4caf50',
-  warning: '#ff9800',
-  error: '#f44336',
-  info: '#2196f3',
-};
-
-// Surface colors
-const surface = {
-  light: {
-    background: '#ffffff',
-    card: '#ffffff',
-    input: '#f5f5f5',
-  },
-  dark: {
-    background: '#121212',
-    card: '#1e1e1e',
-    input: '#2c2c2c',
-  },
-};
 
 export const Colors = {
   light: {
     // Text colors
-    text: neutral[900],
-    textSecondary: neutral[600],
-    textTertiary: neutral[500],
-    textInverse: '#ffffff',
+    text: '#1A1A1A',
+    textSecondary: '#333333',
+    textTertiary: '#4D4D4D',
+    textInverse: '#FFFFFF',
     
     // Background colors
-    background: surface.light.background,
-    backgroundSecondary: neutral[50],
-    card: surface.light.card,
-    input: surface.light.input,
+    background: '#F5F5F5',
+    backgroundSecondary: '#FFFFFF',
+    card: '#FFFFFF',
+    input: '#E8E8E8',
     
     // Brand colors
-    primary: primary[500],
-    primaryDark: primary[700],
-    primaryLight: primary[300],
-    secondary: secondary[500],
-    secondaryDark: secondary[700],
-    secondaryLight: secondary[300],
+    primary: '#1E3A8A', // Deep blue
+    primaryDark: '#1E40AF',
+    primaryLight: '#3B82F6',
+    secondary: '#166534', // Deep green
+    secondaryDark: '#15803D',
+    secondaryLight: '#22C55E',
     
     // UI element colors
-    border: neutral[200],
-    divider: neutral[200],
-    focus: primary[500],
-    hover: `${primary[500]}10`, // 10% opacity
+    border: '#D1D5DB',
+    divider: '#E5E7EB',
+    focus: '#1E3A8A',
+    hover: '#EFF6FF',
     
     // Tab navigation
-    tabIconDefault: neutral[500],
-    tabIconSelected: primary[500],
-    tabBackground: '#ffffff',
+    tabIconDefault: '#6B7280',
+    tabIconSelected: '#1E3A8A',
+    tabBackground: '#FFFFFF',
     
     // Status colors
-    success: semantic.success,
-    warning: semantic.warning,
-    error: semantic.error,
-    info: semantic.info,
+    success: '#166534',
+    warning: '#92400E',
+    error: '#991B1B',
+    info: '#1E3A8A',
     
     // Legacy support
-    tint: primary[500],
-    icon: neutral[600],
+    tint: '#1E3A8A',
+    icon: '#4B5563',
   },
   dark: {
     // Text colors
-    text: '#ffffff',
-    textSecondary: neutral[400],
-    textTertiary: neutral[500],
-    textInverse: neutral[900],
+    text: '#FFFFFF',
+    textSecondary: '#E5E7EB',
+    textTertiary: '#D1D5DB',
+    textInverse: '#1A1A1A',
     
     // Background colors
-    background: surface.dark.background,
-    backgroundSecondary: '#1e1e1e',
-    card: surface.dark.card,
-    input: surface.dark.input,
+    background: '#111827',
+    backgroundSecondary: '#1F2937',
+    card: '#1F2937',
+    input: '#374151',
     
     // Brand colors
-    primary: primary[400], // Slightly lighter in dark mode
-    primaryDark: primary[600],
-    primaryLight: primary[200],
-    secondary: secondary[400], // Slightly lighter in dark mode
-    secondaryDark: secondary[600],
-    secondaryLight: secondary[200],
+    primary: '#3B82F6',
+    primaryDark: '#2563EB',
+    primaryLight: '#60A5FA',
+    secondary: '#22C55E',
+    secondaryDark: '#16A34A',
+    secondaryLight: '#4ADE80',
     
     // UI element colors
-    border: neutral[700],
-    divider: neutral[700],
-    focus: primary[400],
-    hover: `${primary[400]}15`, // 15% opacity
+    border: '#374151',
+    divider: '#4B5563',
+    focus: '#3B82F6',
+    hover: '#1E3A8A',
     
     // Tab navigation
-    tabIconDefault: neutral[400],
-    tabIconSelected: primary[400],
-    tabBackground: '#1e1e1e',
+    tabIconDefault: '#9CA3AF',
+    tabIconSelected: '#3B82F6',
+    tabBackground: '#1F2937',
     
     // Status colors
-    success: '#66bb6a', // Lighter version for dark mode
-    warning: '#ffb74d', // Lighter version for dark mode
-    error: '#e57373', // Lighter version for dark mode
-    info: '#64b5f6', // Lighter version for dark mode
+    success: '#22C55E',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#3B82F6',
     
     // Legacy support
-    tint: primary[400],
-    icon: neutral[400],
-  },
-  
-  // Expose the raw color palettes for custom use cases
-  palette: {
-    primary,
-    secondary,
-    neutral,
-    semantic,
-  },
+    tint: '#3B82F6',
+    icon: '#9CA3AF',
+  }
 };
