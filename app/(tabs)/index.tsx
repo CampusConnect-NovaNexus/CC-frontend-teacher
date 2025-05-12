@@ -182,12 +182,7 @@ export default function DashboardScreen() {
             >
               <View className="flex-row justify-between">
                 <Ionicons name="stats-chart" size={28} color="white" />
-                <Text className="text-white text-4xl font-bold self-end">
-                  69
-                </Text>
-                <Text className="text-white text-xl font-semibold self-end">
-                  %
-                </Text>
+                
               </View>
               <View>
                 <Text className="text-white text-md font-semibold">
@@ -205,9 +200,7 @@ export default function DashboardScreen() {
             >
               <View className="flex-row justify-between">
                 <Ionicons name="alert-circle" size={28} color="white" />
-                <Text className="text-white text-4xl font-bold">
-                  10
-                </Text>
+                
               </View>
               <View>
                 <Text className="text-white text-md font-semibold">
@@ -220,35 +213,33 @@ export default function DashboardScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.push("/attendance/students")}
+              onPress={() => router.push("/courses")}
               className="bg-rose-900 rounded-lg m-2 h-40 w-40 p-4 justify-between"
             >
               <View className="flex-row justify-between">
                 <Ionicons name="people" size={28} color="white" />
-                <Text className="text-white text-4xl font-bold">
-                  59
-                </Text>
+                
               </View>
               <View>
                 <Text className="text-white text-md font-semibold">
-                  Total
+                  All
                 </Text>
                 <Text className="text-white text-md font-semibold">
-                  Students
+                  Courses
                 </Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.push("/attendance/students")}
+              onPress={() => router.push("/profile")}
               className="bg-sky-800 rounded-lg m-2 h-40 w-40 p-4 justify-between"
             >
               <View className="flex-row justify-between">
-                <Ionicons name="settings" size={28} color="white" />
+                <Ionicons name="person" size={28} color="white" />
               </View>
               <View>
                 <Text className="text-white text-md font-semibold">
-                  Settings
+                  Profile
                 </Text>
               </View>
             </TouchableOpacity>

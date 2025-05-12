@@ -81,9 +81,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="attendance"
+        name="courses"
         options={{
-          title: 'Attendance',
+          title: 'Courses',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
