@@ -13,7 +13,7 @@ const screenWidth = Dimensions.get('window').width;
 const COLORS = {
   primary: '#4361ee',
   secondary: '#3f37c9',
-  error: '#f44336',
+  error: '#991b1b',
   background: '#ffffff',
   card: '#ffffff',
   text: '#1a1a1a',
@@ -97,7 +97,7 @@ export default function AttendanceScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: COLORS.background }]}>
+    <View className="mt-12" style={[styles.container, { backgroundColor: COLORS.background }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -116,9 +116,9 @@ export default function AttendanceScreen() {
                 onPress={() => router.push('/attendance/take')}
                 activeOpacity={0.7}
               >
-                <View style={styles.buttonContent}>
-                  <Ionicons name="calendar-outline" size={18} color="#ffffff" style={styles.buttonIcon} />
-                  <Text style={styles.buttonText}>Take Attendance</Text>
+                <View className='flex-col items-center justify-center'>
+                  <Ionicons name="calendar-outline" size={32} color="#ffffff" style={styles.buttonIcon} />
+                  <Text className='text-white pt-6 py-2 text-sm font-semibold'>Take Attendance</Text>
                 </View>
               </TouchableOpacity>
               
@@ -127,9 +127,9 @@ export default function AttendanceScreen() {
                 onPress={() => router.push('/attendance/reports')}
                 activeOpacity={0.7}
               >
-                <View style={styles.buttonContent}>
-                  <Ionicons name="bar-chart-outline" size={18} color="#ffffff" style={styles.buttonIcon} />
-                  <Text style={styles.buttonText}>View Reports</Text>
+                <View className='flex-col items-center justify-center'>
+                  <Ionicons name="bar-chart-outline" size={32} color="#ffffff" style={styles.buttonIcon} />
+                  <Text className='text-white pt-6 py-2 text-sm font-semibold'>View Reports</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -197,16 +197,17 @@ export default function AttendanceScreen() {
             </Text>
           </View>
           
-          <Text style={[styles.alertDescription, { color: COLORS.text }]}>
+          <Text style={[styles.alertDescription, { color: COLORS.text }]}
+                className='self-center mt-5'>
             5 students have attendance below 75%
           </Text>
           
           <TouchableOpacity
-            style={[styles.alertButton, { backgroundColor: COLORS.error }]}
+            className='bg-rose-900 rounded-lg px-4 py-2 w-1/2 self-center'
             onPress={() => router.push('/attendance/low')}
             activeOpacity={0.7}
           >
-            <Text style={styles.buttonText}>View Students</Text>
+            <Text className='text-white self-center py-2 text-sm font-semibold'>View Students</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -265,30 +266,21 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: '48%',
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.sm,
     paddingVertical: spacing.sm,
+    paddingTop: spacing.md,
     paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: 'transparent',
   },
   primaryButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#000',
   },
   secondaryButton: {
-    backgroundColor: COLORS.secondary,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#000',
   },
   buttonIcon: {
     marginRight: spacing.xs,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontWeight: '600',
-    fontSize: FONT_SIZES.bodyMedium,
   },
   classesContainer: {
     padding: 0,

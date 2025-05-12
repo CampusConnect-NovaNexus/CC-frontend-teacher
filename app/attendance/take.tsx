@@ -183,7 +183,7 @@ export default function TakeAttendanceScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="mt-12">
       <View style={styles.header}>
         <Text style={styles.heading}>Take Attendance</Text>
         <Text>Select Course</Text>
@@ -228,9 +228,9 @@ export default function TakeAttendanceScreen() {
                 <Button onPress={markAllAbsent}>Mark All Absent</Button>
               </View>
               <View style={styles.stats}>
-                <Text>Total: {students.length}</Text>
-                <Text>Present: {students.filter((s) => s.present).length}</Text>
-                <Text>Absent: {students.filter((s) => !s.present).length}</Text>
+                <Text className='font-bold'>Total: {students.length}</Text>
+                <Text className='font-bold'>Present: {students.filter((s) => s.present).length}</Text>
+                <Text className='font-bold'>Absent: {students.filter((s) => !s.present).length}</Text>
               </View>
               <FlatList
                 data={filteredStudents}
@@ -258,9 +258,10 @@ const styles = StyleSheet.create({
   header: { padding: 16, borderBottomWidth: 1, borderColor: "#ccc" },
   heading: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   pickerWrapper: {
+    margin : 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
+    borderRadius: 10,
     overflow: "hidden",
   },
   body: { padding: 16, flex: 1 },
@@ -272,7 +273,8 @@ const styles = StyleSheet.create({
   stats: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    margin: 10,
+    marginBottom : 14
   },
   studentItem: {
     flexDirection: "row",

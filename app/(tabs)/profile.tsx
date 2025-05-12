@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { Image, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-// Light mode colors
 const COLORS = {
   primary: '#4361ee',
   secondary: '#3f37c9',
@@ -20,7 +19,6 @@ const COLORS = {
   textInverse: '#ffffff',
 };
 
-// Profile menu item component
 interface ProfileMenuItemProps {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
@@ -58,7 +56,7 @@ function ProfileMenuItem({
 // Card components
 function Card({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <View className={`bg-white rounded-lg shadow-md border border-gray-200 mx-4 mt-4 overflow-hidden ${className || ''}`}>
+    <View className={`bg-white rounded-xl shadow-md border border-gray-200 mx-4 mt-4 overflow-hidden ${className || ''}`}>
       {children}
     </View>
   );
@@ -86,8 +84,6 @@ function CardDivider() {
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
   const onRefresh = () => {
@@ -131,22 +127,22 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white mt-12">
       <ScrollView 
         showsVerticalScrollIndicator={false}
         className="flex-1"
       >
         {/* Profile Header */}
-        <View className="py-8 px-6 items-center bg-blue-600">
+        <View className="py-20 px-6 items-center bg-stone-800 justify-center flex-col">
           <View className="w-24 h-24 rounded-full overflow-hidden bg-white mb-4 border-2 border-white/50">
             <Image
-              source={require('@/assets/images/logo.png')}
+              source={require('@/assets/logo.png')}
               className="w-full h-full"
               resizeMode="cover"
             />
           </View>
           
-          <Text className="text-xl font-semibold text-white mb-1">
+          <Text className="text-2xl font-semibold text-white mb-3">
             {user?.name || 'Teacher Name'}
           </Text>
           
@@ -154,8 +150,8 @@ export default function ProfileScreen() {
             {user?.email || 'teacher@example.com'}
           </Text>
           
-          <Text className="text-base text-white/90 mt-1">
-            Computer Science Department
+          <Text className="text-white/90 mt-3 text-center font-semibold">
+            Department of Computer Science and Engineering
           </Text>
         </View>
         
@@ -176,46 +172,12 @@ export default function ProfileScreen() {
               label="Change Password" 
               onPress={() => {}} 
             />
-            
-            <CardDivider />
-            
-            <ProfileMenuItem 
-              icon="notifications-outline" 
-              label="Notifications" 
-              showChevron={false}
-              rightElement={
-                <Switch
-                  value={notificationsEnabled}
-                  onValueChange={setNotificationsEnabled}
-                  trackColor={{ false: '#bdc3c7', true: COLORS.primary }}
-                  thumbColor="#ffffff"
-                  ios_backgroundColor="#bdc3c7"
-                />
-              }
-            />
-            
-            <CardDivider />
-            
-            <ProfileMenuItem 
-              icon="moon-outline" 
-              label="Dark Mode" 
-              showChevron={false}
-              rightElement={
-                <Switch
-                  value={darkModeEnabled}
-                  onValueChange={setDarkModeEnabled}
-                  trackColor={{ false: '#bdc3c7', true: COLORS.primary }}
-                  thumbColor="#ffffff"
-                  ios_backgroundColor="#bdc3c7"
-                />
-              }
-            />
           </CardContent>
         </Card>
         
         {/* Logout Button */}
         <TouchableOpacity
-          className="bg-red-500 py-3 px-6 rounded-md mx-auto mt-10 flex-row items-center justify-center w-[30%]"
+          className="bg-rose-800 py-3 px-6 rounded-md mx-auto mt-10 flex-row items-center justify-center w-[30%]"
           onPress={handleLogout}
           activeOpacity={0.7}
         >
