@@ -162,9 +162,9 @@ export default function AttendanceScreen() {
                 onPress={() => router.push('/attendance/take')}
                 activeOpacity={0.7}
               >
-                <View  className='flex-row items-start justify-center ' >
-                  <Ionicons name="calendar-outline" size={18} color="#ffffff" style={styles.buttonIcon} />
-                  <Text style={styles.buttonText}>Take Attendance</Text>
+                <View  className='flex-col items-center` justify-center ' >
+                  <Ionicons name="calendar-outline" size={32} color="#ffffff" style={styles.buttonIcon} />
+                  <Text className='text-white pt-6 py-2 text-sm font-semibold'>Take Attendance</Text>
                 </View>
               </TouchableOpacity>
               
