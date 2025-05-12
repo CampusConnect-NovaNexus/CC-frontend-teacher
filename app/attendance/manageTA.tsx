@@ -284,7 +284,7 @@ export default function ManageTAScreen() {
                 <Ionicons name="arrow-back" size={24} color={COLORS.text} />
               </TouchableOpacity>
               <View>
-                <Text style={[styles.pageTitle, { color: COLORS.text }]}>Manage Teaching Assistants</Text>
+                <Text style={[styles.pageTitle, { color: COLORS.text }]}>Manage Teaching Asst.</Text>
                 <Text style={[styles.pageSubtitle, { color: COLORS.textSecondary }]}>
                   Add or remove TAs from your courses
                 </Text>
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   picker: {
-    height: 50,
+    height: 60,
   },
   input: {
     height: 50,

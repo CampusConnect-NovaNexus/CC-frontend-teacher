@@ -129,7 +129,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white mt-12">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView 
         showsVerticalScrollIndicator={false}
         className="flex-1"

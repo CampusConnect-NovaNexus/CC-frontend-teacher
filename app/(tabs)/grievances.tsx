@@ -3,10 +3,8 @@
 import { EXPO_AUTH_API_URL } from "@env";
 import { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-
 import { useAuth } from "@/context/AuthContext";
 import { useFocusEffect, useRouter } from "expo-router";
-
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
@@ -22,7 +20,6 @@ import {
 } from "react-native";
 
 import TimeAgo from "@/components/TimeAgo";
-import UpVoteBtn from "@/components/UpVoteBtn";
 import { icons } from "@/constants/icons";
 import { addResolver } from "@/service/grievance/addResolver";
 import { fetchGrievances } from "@/service/grievance/fetchGrievances";
@@ -96,7 +93,6 @@ export default function GrievanceScreen() {
     setDropdownVisible(false);
   };
   useEffect(() => {
-    // Load user_id from AsyncStorage when component mounts
     const getUserId = async () => {
       try {
         const id = await AsyncStorage.getItem("@user_id");
@@ -128,7 +124,6 @@ export default function GrievanceScreen() {
     }, 2000);
   };
 
-  // Fetch usernames for all grievances
   useEffect(() => {
     const fetchUserNames = async () => {
       const userNamesMap: Record<string, string> = {};
@@ -192,19 +187,16 @@ export default function GrievanceScreen() {
     const twoHours = 2 * 60 * 60 * 1000;
 
     try {
-      // Check for existing cache
       const cached = await AsyncStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed.timestamp && now - parsed.timestamp < twoHours) {
           setGrievances(parsed.data);
         } else {
-          // Expired, remove cache
           await AsyncStorage.removeItem(cacheKey);
         }
       }
 
-      // Fetch fresh data
       const result = await fetchGrievances();
 
       if (result) {
@@ -238,15 +230,6 @@ export default function GrievanceScreen() {
     }
   };
 
-  // useEffect(() => {
-  //   loadGrievances();
-  //   loadStats();
-  // }, []);
-
-  // useEffect(() => {
-
-  //   loadComments();
-  // }, [grievanceItem]);
   useEffect(() => {
     if (grievanceItem) {
       loadComments();
@@ -259,42 +242,7 @@ export default function GrievanceScreen() {
       clearOldCommentCaches();
     }, [])
   );
-  // const postNewGrievance = async () => {
-  //   if (newGrievance.title && newGrievance.description) {
-  //     const payload = {
-  //       user_id: user_id,
-  //       title: newGrievance.title,
-  //       description: newGrievance.description,
-  //       category: newGrievance.selectedCategory
-  //     };
-  //     console.log(payload);
-  //     const response = await postGrievance(payload);
-  //     if (response?.c_id) {
-  //       Toast.show({
-  //         type: 'success',
-  //         text1: ' Uploaded Successfully',
-  //         text2: 'Your problem will be resolved at the earliest '
-  //       });
-  //       setFormVisible(false);
-  //       setNewGrievance({ title: "", description: "", selectedCategory: "" });
-  //       loadStats();
-  //       loadGrievances();
-  //     }
-  //   }
-  //   else {
-  //     Toast.show({
-  //       type: 'info',
-  //       text1: 'Insufficient Info',
-  //       text2: 'Kindly fill all the fields'
-  //     });
-  //   }
-  // };
-  // const loadComments = async () => {
-  //   if (grievanceItem) {
-  //     const result = await getComment(grievanceItem.c_id);
-  //     setComments(result?.comments.reverse() || null);
-  //   }
-  // };
+
   const loadComments = async () => {
     if (!grievanceItem) return;
 
@@ -307,23 +255,14 @@ export default function GrievanceScreen() {
 
       setComments(fetchedComments);
 
-      // Cache comments locally
       if (fetchedComments) {
-        // await AsyncStorage.setItem(cacheKey, JSON.stringify(fetchedComments));
         await AsyncStorage.setItem(
           cacheKey,
           JSON.stringify({ timestamp: Date.now(), data: fetchedComments })
         );
       }
     } catch (err) {
-      // If API fails (e.g., offline), load from local storage
       const cached = await AsyncStorage.getItem(cacheKey);
-      // if (cached) {
-      //   const parsed = JSON.parse(cached);
-      //   setComments(parsed);
-      // } else {
-      //   setComments([]);
-      // }
       if (cached) {
         const parsed = JSON.parse(cached);
         const now = Date.now();
@@ -332,7 +271,6 @@ export default function GrievanceScreen() {
         if (parsed.timestamp && now - parsed.timestamp < oneHour) {
           setComments(parsed.data);
         } else {
-          // Cache is too old, remove it and fetch again
           await AsyncStorage.removeItem(cacheKey);
           setComments([]);
         }
@@ -341,29 +279,6 @@ export default function GrievanceScreen() {
       }
     }
   };
-  // getTimeAgo function has been moved to the TimeAgo component
-
-  // const handlePostComment = async (c_id: string) => {
-  //   if (!newComment.trim()) return;
-
-  //   try {
-  //     await postComment(c_id, user_id, newComment);
-  //     setNewComment("");
-
-  //     const result = await getComment(c_id);
-  //     const updatedComments = result?.comments.reverse() || [];
-
-  //     setComments(updatedComments);
-
-  //     // Update AsyncStorage cache
-  //     await AsyncStorage.setItem(
-  //       `comments_${c_id}`,
-  //       JSON.stringify(updatedComments)
-  //     );
-  //   } catch (error) {
-  //     console.log("Comment post failed:", error);
-  //   }
-  // };
 
   const renderGrievanceItem = ({ item }: { item: Grievance }) => {
     const userName = userNames[item.user_id] || "User";
@@ -397,22 +312,21 @@ export default function GrievanceScreen() {
               />
             </View>
           </View>
-          {/* Rest of the component remains the same */}
           <Text className="text-lg font-semibold mb-2">{item.title}</Text>
           <Text className="text-gray-600 mb-3">{item.description}</Text>
           {item.category && (
             <View style={{
-              backgroundColor: '#FEF3C7', // amber-100
+              backgroundColor: '#FEF3C7', 
               paddingHorizontal: 12,
               paddingVertical: 6,
               borderRadius: 20,
               alignSelf: 'flex-start',
               marginBottom: 10,
               borderWidth: 1,
-              borderColor: '#FCD34D', // amber-300
+              borderColor: '#FCD34D', 
             }}>
               <Text style={{
-                color: '#92400E', // amber-800
+                color: '#92400E', 
                 fontWeight: '500',
                 fontSize: 12,
               }}>{item.category}</Text>
@@ -473,18 +387,17 @@ export default function GrievanceScreen() {
             <Text className="text-white">Resolved</Text>
           </View>
         </View>
-        <View className="z-10 bg-[#fdfcf9]">
+        <View className="z-10">
           <View className="flex-row justify-between items-center px-4 pb-2">
             <Text
-              style={{ fontFamily: "wastedVindey" }}
-              className="text-3xl"
+              className="text-3xl font-bold"
             >
               Recent Issues
             </Text>
             <TouchableOpacity
               onPress={() => setIsDropdownVisible(prev => !prev)}
               style={{
-                backgroundColor: 'black', // amber-500
+                backgroundColor: 'black', 
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 borderRadius: 20,
@@ -506,7 +419,7 @@ export default function GrievanceScreen() {
 
           {viewSelectedCategory ? (
             <View style={{
-              backgroundColor: '#FEF3C7', // amber-100
+              backgroundColor: '#FEF3C7', 
               marginHorizontal: 16,
               marginBottom: 12,
               padding: 10,
@@ -578,13 +491,6 @@ export default function GrievanceScreen() {
             </View>
           </Modal>
         </View>
-{/* 
-        <TouchableOpacity
-          className="absolute w-fit bottom-20 right-6 bg-amber-600 rounded-full p-5 z-10 "
-          onPress={() => setFormVisible(true)}
-        >
-          <Ionicons name="add-circle" size={26} color="#fdfcf9" />
-        </TouchableOpacity> */}
 
         {grievances?.length === 0 ? (
           <View className="h-40 w-full justify-center">
@@ -667,23 +573,7 @@ export default function GrievanceScreen() {
               }}
               className="mb-4 max-h-40"
             />
-
             <View className="flex-row items-center gap-2 mt-2">
-              {/* <TextInput
-                className="bg-gray-100 rounded-lg flex-1 p-3"
-                placeholder="Your Comment here..."
-                value={newComment}
-                onChangeText={setNewComment}
-                placeholderTextColor="#6B7280"
-              /> */}
-              {/* <Pressable
-                onPress={() =>
-                  grievanceItem && handlePostComment(grievanceItem.c_id)
-                }
-                className="bg-amber-600 p-3 rounded-full"
-              >
-                <Ionicons name="send" size={24} color="white" />
-              </Pressable> */}
             </View>
           </View>
         </Modal>

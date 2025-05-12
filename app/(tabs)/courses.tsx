@@ -245,7 +245,7 @@ export default function AttendanceScreen() {
           
           <Text style={[styles.alertDescription, { color: COLORS.text }]}
                 className='self-center mt-5'>
-            5 students have attendance below 75%
+            Some students have attendance below 75%
           </Text>
           
           <TouchableOpacity
