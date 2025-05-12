@@ -1,10 +1,10 @@
-# NIT Manipur Campus Connect - Teacher Frontend
+# NIT Meghalaya Campus Connect - Teacher Frontend
 
 ## Overview
 
-The Campus Connect Teacher Frontend is a comprehensive mobile application built with Expo and React Native, designed to streamline academic management for teachers at NIT Manipur. This application provides an intuitive interface for managing attendance, handling student grievances, and accessing course information.
+The Campus Connect Teacher Frontend is a comprehensive mobile application built with Expo and React Native, designed to streamline academic management for teachers at NIT Meghalaya. This application provides an intuitive interface for managing attendance, handling student grievances, and accessing course information.
 
-![NIT Manipur Logo](./assets/images/nit_logo.png)
+![NIT Meghalaya Logo](./assets/images/nit_logo.png)
 
 ## Features
 
@@ -123,8 +123,11 @@ The application connects to a backend API for:
 
 ## License
 
-This project is proprietary and owned by NIT Manipur.
+This project is proprietary and owned by Charity Shashank and Jishnu 
 
 ## Contact
 
-For any queries or support, please contact the development team at NIT Manipur.
+For any queries or support, please contact the development team:
+- Shashank
+- Jishnu
+- Charity
