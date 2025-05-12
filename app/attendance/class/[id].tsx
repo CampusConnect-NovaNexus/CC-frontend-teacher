@@ -1,5 +1,5 @@
 
-import { getCourseAttendanceStats } from "@/service/attendance/getCourseAttendanceStats";
+import { getCourseAttendanceStats } from "@/service/attendance/getCourseAttendancePercentage";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { spacing, layout, borderRadius } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
-
+import { Colors } from '@/constants/Colors';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -205,8 +205,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
-    marginBottom: spacing.xs,
-  },
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: Colors.light.tint,
+      marginBottom: 8,
+    },
   formContainer: {
     marginBottom: spacing.xl,
   },
