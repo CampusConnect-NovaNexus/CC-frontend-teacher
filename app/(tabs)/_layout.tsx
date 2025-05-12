@@ -74,6 +74,7 @@ export default function TabLayout() {
         name="grievances"
         options={{
           title: 'Grievances',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-text" size={size} color={color} />
           ),
@@ -83,6 +84,7 @@ export default function TabLayout() {
         name="attendance"
         options={{
           title: 'Attendance',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
@@ -92,6 +94,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),

@@ -30,6 +30,7 @@ import { getComment } from "@/service/grievance/getComment";
 import { getStats } from "@/service/grievance/getStats";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Modal from "react-native-modal";
+import { SafeAreaView } from "react-native-safe-area-context";
 interface Comment {
   c_id: string;
   c_message: string;
@@ -450,7 +451,7 @@ export default function GrievanceScreen() {
   };
 
   return (
-    <View className="flex-1 relative bg-[#72726f]">
+    <SafeAreaView className="flex-1 relative bg-[#72726f]">
       <View className="flex-1 relative bg-[#fbf7f7]">
         <View className="flex-row justify-between mb-5 p-4">
           <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
@@ -687,7 +688,7 @@ export default function GrievanceScreen() {
           </View>
         </Modal>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

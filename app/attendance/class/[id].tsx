@@ -1,4 +1,5 @@
 import SimpleLineChart from "@/components/SimpleLineChart";
+
 import { getStudents } from "@/service/attendance/getStudents";
 import { getAttendanceStatsOfClass } from "@/service/attendance/getAttendanceStatsOfClass";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,7 +18,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const screenWidth = Dimensions.get("window").width;
@@ -53,23 +54,32 @@ export default function ClassAttendanceScreen() {
   };
 
   useEffect(() => {
+    loadStudents();
     loadClassData();
   }, [courseCode]);
+  const loadStudents = async () => {
+    const data = await getStudents(courseCode);
+    const mappedData: Student[] = data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      rollNumber: item.roll_no,
+      course_code: item.course_code,
+    }));
+    
 
+    await setStudents(mappedData);
+  };
   const loadClassData = async () => {
+    setClassName(courseCode.toUpperCase() || "Unknown Class");
     try {
       setLoading(true);
 
-      const Classdata = await getAttendanceStatsOfClass(courseCode, startDate?.toISOString(), endDate?.toISOString());
-      const data= await getStudents(courseCode);
-      setClassName(courseCode.toUpperCase() || "Unknown Class");
-      const mappedData: Student[] = data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        rollNumber: item.roll_no,
-        course_code: item.course_code,
-      }));
-      await setStudents(mappedData);
+      const classdata = await getAttendanceStatsOfClass(
+        courseCode,
+        startDate?.toISOString(),
+        endDate?.toISOString()
+      );
+      
     } catch (error) {
       console.error("Error loading class data:", error);
     } finally {
@@ -104,59 +114,57 @@ export default function ClassAttendanceScreen() {
             </TouchableOpacity>
             <View>
               <Text className="text-2xl font-bold">{className}</Text>
-              <View className="flex-col items-center">
+              
+              <Text className="text-gray-600">{students.length} students</Text>
+            </View>
+          </View>
+          <View className="flex-col ">
+                <TouchableOpacity
+                  onPress={() => setShowStartPicker(true)}
+                  className="bg-white border rounded-lg p-2 mb-4"
+                >
+                  <Text style={{ fontSize: 16 }}>
+                    {startDate
+                      ? `Start Date: ${formatDate(startDate).slice(0, 10)}`
+                      : "Select Start Date"}
+                  </Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => setShowStartPicker(true)}
-                className="bg-white border rounded-lg p-2 mb-4"
+                <TouchableOpacity
+                  onPress={() => setShowEndPicker(true)}
+                  className="bg-white border rounded-lg p-2 mb-4"
                 >
-                <Text style={{ fontSize: 16 }}>
-                  {startDate
-                    ? `Start Date: ${formatDate(startDate).slice(0,10)}`
-                    : "Select Start Date"}
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                onPress={() => setShowEndPicker(true)}
-                className="bg-white border rounded-lg p-2 mb-4"
-                >
-                <Text style={{ fontSize: 16 }}>
-                  {endDate
-                    ? `End Date: ${formatDate(endDate).slice(0,10)}`
-                    : "Select End Date"}
-                </Text>
-              </TouchableOpacity>
-              
+                  <Text style={{ fontSize: 16 }}>
+                    {endDate
+                      ? `End Date: ${formatDate(endDate).slice(0, 10)}`
+                      : "Select End Date"}
+                  </Text>
+                </TouchableOpacity>
               </View>
               {showStartPicker && (
                 <DateTimePicker
-                value={startDate || new Date()}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={(event, selectedDate) => {
-                  setShowStartPicker(false);
-                  console.log("Selected Start Date:", selectedDate);
-                  
-                  if (selectedDate) setStartDate(selectedDate);
-                }}
+                  value={startDate || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={(event, selectedDate) => {
+                    setShowStartPicker(false);
+                    console.log("Selected Start Date:", selectedDate);
+
+                    if (selectedDate) setStartDate(selectedDate);
+                  }}
                 />
               )}
               {showEndPicker && (
                 <DateTimePicker
-                value={endDate || new Date()}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={(event, selectedDate) => {
-                  setShowEndPicker(false);
-                  if (selectedDate) setEndDate(selectedDate);
-                }}
+                  value={endDate || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={(event, selectedDate) => {
+                    setShowEndPicker(false);
+                    if (selectedDate) setEndDate(selectedDate);
+                  }}
                 />
               )}
-              <Text className="text-gray-600">{students.length} students</Text>
-            </View>
-          </View>
-
           <View className="mb-6 flex-row justify-between items-center">
             <Text className="text-lg font-semibold">
               {isTakingAttendance ? "Mark Attendance" : "Students"}

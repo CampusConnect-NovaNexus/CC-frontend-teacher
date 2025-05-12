@@ -167,7 +167,7 @@ export default function AttendanceScreen() {
                       <Text style={[styles.courseDetails, { color: COLORS.textSecondary }]}>
                         {course.total_classes} total classes
                       </Text>
-                      <Text>Teaching Assistances : </Text>
+                      <Text>Teaching Assistants : </Text>
                       {course.TA.map((ta, index) => (
                         <Text key={index} className='text-sm text-gray-500'>
                           {ta}

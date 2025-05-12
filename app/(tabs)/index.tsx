@@ -40,7 +40,7 @@ export default function DashboardScreen() {
       setRefreshing(false);
     }, 2000);
   };
-  // Get theme colors
+  
   const primaryColor = useThemeColor({}, "primary");
   const loadStats = async () => {
     console.log("Loading stats...");

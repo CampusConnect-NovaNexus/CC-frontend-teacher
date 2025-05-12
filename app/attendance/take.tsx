@@ -18,6 +18,7 @@ import { getCourses } from "@/service/attendance/getCourses";
 import { getStudents } from "@/service/attendance/getStudents";
 import { markAttendance } from "@/service/attendance/markAttendance";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface CourseType {
   course_code: string;
@@ -183,7 +184,7 @@ export default function TakeAttendanceScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.heading}>Take Attendance</Text>
         <Text>Select Course</Text>
@@ -249,7 +250,7 @@ export default function TakeAttendanceScreen() {
           Please select a course to take attendance
         </Text>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
