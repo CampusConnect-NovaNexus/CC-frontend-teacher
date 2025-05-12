@@ -41,7 +41,7 @@ const COLORS = {
   text: '#000000',
   textSecondary: '#555555',
   border: '#dddddd',
-  error: '#ff3b30',
+  error: '#991b1b',
   success: '#34c759',
   warning: '#ffcc00',
   info: '#007aff',
@@ -255,10 +255,10 @@ export default function LowAttendanceScreen() {
       <View style={styles.studentHeader}>
         <View>
           <Text style={[styles.studentName, { color: COLORS.text }]}>
-            {item.student_name}
+            Name : {item.student_name}
           </Text>
           <Text style={[styles.studentName, { color: COLORS.text }]}>
-            {item.student_roll_no}
+            Roll No : {item.student_roll_no}
           </Text>
           
         </View>
@@ -269,13 +269,13 @@ export default function LowAttendanceScreen() {
         </View>
       </View>
       
-      <View style={styles.actionButtons}>
+      <View className='flex justify-end items-end'>
         <TouchableOpacity 
-          className='bg-blue-500 flex-row items-center px-4 py-2 rounded-md mr-2'
+          className='bg-stone-800 flex-row items-center justify-center p-4 rounded-full mr-2'
           onPress={() => {/* Send notification functionality would go here */}}
         >
-          <Ionicons name="mail-outline" size={20} color="#ffffff" />
-          <Text style={styles.buttonText}>Notify</Text>
+          <Ionicons name="mail-outline" size={22} color="#ffffff" />
+          {/* <Text style={styles.buttonText}>Notify</Text> */}
         </TouchableOpacity>
         
         {/* <TouchableOpacity 
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   picker: {
-    height: 50,
+    height: 60,
   },
   loader: {
     marginVertical: 10,
@@ -689,7 +689,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   actionButtons: {
-    flexDirection: 'row',
     marginTop: 12,
   },
   actionButton: {
@@ -702,7 +701,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    marginLeft: 4,
+    marginLeft: 6,
+    fontWeight: 'bold',
     fontSize: 13,
   },
   loadingContainer: {
