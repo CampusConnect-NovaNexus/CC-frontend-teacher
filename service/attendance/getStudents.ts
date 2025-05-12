@@ -10,6 +10,7 @@ export const getStudents = async (courseCode: string) => {
     }
 
     const data = await response.json();
+    console.log('data in get students ',data);
     
     return data
   } catch (error) {

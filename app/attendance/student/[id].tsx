@@ -1,10 +1,11 @@
 import SimpleLineChart from '@/components/SimpleLineChart';
 import { getAttendanceStats } from '@/service/attendance/getAttendanceStatsOfStudent';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 // Light mode colors
 const COLORS = {
@@ -63,33 +64,98 @@ export default function StudentDetailScreen() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<AttendanceStatsType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchStats();
-  }, [id, startDate, endDate]);
+  // Generate a storage key based on student ID and date filters
+  const getStorageKey = () => {
+    const dateParams = startDate || endDate 
+      ? `_${startDate?.toISOString() || 'nostart'}_${endDate?.toISOString() || 'noend'}`
+      : '';
+    return `@student_attendance_${id}${dateParams}`;
+  };
 
-  const fetchStats = async () => {
+  // Load cached attendance data
+  const loadCachedStats = async () => {
     if (!id) return;
     
     try {
-      setLoading(true);
+      const storageKey = getStorageKey();
+      const cachedData = await AsyncStorage.getItem(storageKey);
+      
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData) as AttendanceStatsType;
+        setStats(parsedData);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error loading cached attendance stats:', error);
+      return false;
+    }
+  };
+
+  // Save attendance data to AsyncStorage
+  const cacheStats = async (statsData: AttendanceStatsType) => {
+    try {
+      const storageKey = getStorageKey();
+      await AsyncStorage.setItem(storageKey, JSON.stringify(statsData));
+    } catch (error) {
+      console.error('Error caching attendance stats:', error);
+    }
+  };
+
+  // Fetch fresh data from API
+  const fetchStats = async (showLoading = true) => {
+    if (!id) return;
+    
+    try {
+      
       setError(null);
+      
       const statsData = await getAttendanceStats(
         id, 
         startDate ? startDate.toISOString() : undefined, 
         endDate ? endDate.toISOString() : undefined
       );
+      
       setStats(statsData);
-      setLoading(false);
+      // Cache the new data
+      cacheStats(statsData);
+      
     } catch (error) {
       console.error('Error fetching attendance stats:', error);
       setError('Failed to load attendance statistics');
       setLoading(false);
     }
   };
+  
+  // Handle pull-to-refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchStats(false);
+    setRefreshing(false);
+  }, [id, startDate, endDate]);
+  
+  // Initial data loading
+  useEffect(() => {
+    const initializeData = async () => {
+      // First try to load cached data
+      const hasCachedData = await loadCachedStats();
+      
+      // If no cached data or we need fresh data anyway, fetch from API
+      if (!hasCachedData) {
+        setLoading(true);
+      }
+      
+      // Always fetch fresh data, but we might already be showing cached data
+      fetchStats(!hasCachedData);
+    };
+    
+    initializeData();
+  }, [id, startDate, endDate]);
 
   const handleStartDateChange = (event: any, selectedDate?: Date) => {
     setShowStartPicker(false);
@@ -120,6 +186,15 @@ export default function StudentDetailScreen() {
       <ScrollView 
         showsVerticalScrollIndicator={false}
         className="flex-1 px-4 pb-8"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.text} // Black in light mode
+            colors={[COLORS.text]}
+            progressBackgroundColor={COLORS.background} // White in light mode
+          />
+        }
       >
         <Text className="text-xl font-semibold text-gray-800 mt-4 mb-2">
           Student Attendance Details

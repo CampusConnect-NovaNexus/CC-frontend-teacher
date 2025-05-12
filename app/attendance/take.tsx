@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
-import Toast from "react-native-toast-message";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { layout, spacing } from "@/constants/Spacing";
 import { useAuth } from "@/context/AuthContext";
 import { getCourses } from "@/service/attendance/getCourses";
 import { getStudents } from "@/service/attendance/getStudents";
 import { markAttendance } from "@/service/attendance/markAttendance";
+import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 interface CourseType {
   course_code: string;
@@ -79,7 +79,20 @@ export default function TakeAttendanceScreen() {
     try {
       setLoading(true);
       const studentsData = await getStudents(courseCode);
-      setStudents(studentsData.map((s) => ({ ...s, present: true })));
+      
+      // Map data and add 'present' property
+      let mappedStudents = studentsData.map((s) => ({ ...s, present: true }));
+      
+      // Sort by roll number (extract numeric part and sort numerically)
+      mappedStudents.sort((a, b) => {
+        // Extract numeric part from roll numbers (e.g., "019" from "B23CS019")
+        const numA = parseInt(a.roll_no.replace(/[^\d]/g, ''), 10);
+        const numB = parseInt(b.roll_no.replace(/[^\d]/g, ''), 10);
+        
+        return numA - numB; // Sort in ascending order
+      });
+      
+      setStudents(mappedStudents);
     } catch (error) {
       Toast.show({
         type: "error",
@@ -183,7 +196,7 @@ export default function TakeAttendanceScreen() {
   );
 
   return (
-    <View style={styles.container} className="mt-12">
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.heading}>Take Attendance</Text>
         <Text>Select Course</Text>
@@ -224,7 +237,7 @@ export default function TakeAttendanceScreen() {
                 }
               />
               <View style={styles.actions}>
-                <Button onPress={markAllPresent}>Mark All Present</Button>
+                <Button  onPress={markAllPresent}>Mark All Present</Button>
                 <Button onPress={markAllAbsent}>Mark All Absent</Button>
               </View>
               <View style={styles.stats}>
@@ -249,7 +262,7 @@ export default function TakeAttendanceScreen() {
           Please select a course to take attendance
         </Text>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

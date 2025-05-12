@@ -1,11 +1,11 @@
-import SimpleLineChart from '@/components/SimpleLineChart';
 import { borderRadius, layout, spacing } from '@/constants/Spacing';
 import { useAuth } from '@/context/AuthContext';
 import { getCourses } from '@/service/attendance/getCourses';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -71,24 +71,61 @@ export default function AttendanceScreen() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState<CourseType[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   
-  // Mock data for attendance chart
-  const attendanceLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-  const attendanceData = [85, 78, 92, 88];
   
-  const fetchCourses = async () => {
+  
+  // AsyncStorage keys
+  const COURSES_STORAGE_KEY = '@teacher_courses';
+  
+  // Load cached courses data
+  const loadCachedCourses = async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(COURSES_STORAGE_KEY);
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData) as CourseType[];
+        setCourses(parsedData);
+      }
+    } catch (error) {
+      console.error('Error loading cached courses:', error);
+    }
+  };
+  
+  // Save courses data to AsyncStorage
+  const cacheCourses = async (coursesData: CourseType[]) => {
+    try {
+      await AsyncStorage.setItem(COURSES_STORAGE_KEY, JSON.stringify(coursesData));
+    } catch (error) {
+      console.error('Error caching courses:', error);
+    }
+  };
+  
+  const fetchCourses = async (showLoading = true) => {
     if (!user?.email) return;
     
     try {
-      setLoading(true);
+      
       const coursesData = await getCourses(user.email);
       setCourses(coursesData);
+      // Cache the new data
+      cacheCourses(coursesData);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching courses:', error);
-      setLoading(false);
+      
     }
   };
+  
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchCourses(false);
+    setRefreshing(false);
+  }, [user]);
+  
+  // Load cached data on initial render
+  useEffect(() => {
+    loadCachedCourses();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -101,9 +138,18 @@ export default function AttendanceScreen() {
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.text} // Black in light mode
+            colors={[COLORS.text]}
+            progressBackgroundColor={COLORS.background} // White in light mode
+          />
+        }
       >
         <Text style={[styles.pageTitle, { color: COLORS.text, fontSize: FONT_SIZES.displaySmall }]}>
-          Attendance Management
+          Your Courses
         </Text>
         
         {/* Quick Actions */}
@@ -112,18 +158,18 @@ export default function AttendanceScreen() {
           <CardContent style={styles.quickActionsContainer}>
             <View style={styles.actionButtonsRow}>
               <TouchableOpacity
-                style={[styles.actionButton, styles.primaryButton]}
+                className='bg-black flex-col items-center justify-center rounded-xl p-3 w-[48%] '
                 onPress={() => router.push('/attendance/take')}
                 activeOpacity={0.7}
               >
-                <View className='flex-col items-center justify-center'>
-                  <Ionicons name="calendar-outline" size={32} color="#ffffff" style={styles.buttonIcon} />
-                  <Text className='text-white pt-6 py-2 text-sm font-semibold'>Take Attendance</Text>
+                <View  className='flex-row items-start justify-center ' >
+                  <Ionicons name="calendar-outline" size={18} color="#ffffff" style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Take Attendance</Text>
                 </View>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.actionButton, styles.secondaryButton]}
+                className='bg-black flex-col items-center justify-center rounded-xl p-3 w-[48%] '
                 onPress={() => router.push('/attendance/reports')}
                 activeOpacity={0.7}
               >
@@ -167,7 +213,7 @@ export default function AttendanceScreen() {
                       <Text style={[styles.courseDetails, { color: COLORS.textSecondary }]}>
                         {course.total_classes} total classes
                       </Text>
-                      <Text>Teaching Assistances : </Text>
+                      <Text>Teaching Assistants : </Text>
                       {course.TA.map((ta, index) => (
                         <Text key={index} className='text-sm text-gray-500'>
                           {ta}

@@ -74,15 +74,16 @@ export default function TabLayout() {
         name="grievances"
         options={{
           title: 'Grievances',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-text" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="attendance"
+        name="courses"
         options={{
-          title: 'Attendance',
+          title: 'Courses',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
