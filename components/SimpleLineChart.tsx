@@ -81,13 +81,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'flex-end',
-    height: 120,
+    height: '60%',
     marginBottom: 20,
   },
   dataColumn: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    width: '22%',
+    width: '18%',
+    marginHorizontal: '1%',
   },
   bar: {
     width: '80%',
@@ -95,14 +96,14 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   label: {
-    fontSize: 10,
-    marginTop: 5,
+    fontSize: 12,
+    marginTop: 8,
     textAlign: 'center',
   },
   value: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginTop: 2,
+    marginTop: 4,
   },
   averageContainer: {
     marginTop: 10,

@@ -2,9 +2,9 @@ import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const COLORS = {
   primary: '#4361ee',
   secondary: '#3f37c9',
@@ -25,12 +25,14 @@ interface ProfileMenuItemProps {
   onPress?: () => void;
   showChevron?: boolean;
   rightElement?: React.ReactNode;
+  color: string;
 }
 
 function ProfileMenuItem({ 
   icon, 
   label, 
   onPress, 
+  color,
   showChevron = true, 
   rightElement 
 }: ProfileMenuItemProps) {
@@ -42,7 +44,7 @@ function ProfileMenuItem({
       activeOpacity={onPress ? 0.7 : 1}
     >
       <View className="flex-row items-center">
-        <Ionicons name={icon} size={24} color={COLORS.primary} className="mr-4" />
+        <Ionicons name={icon} size={24} color={color?color:COLORS.primary} className="mr-4" />
         <Text className="text-base text-gray-800">{label}</Text>
       </View>
       
@@ -127,7 +129,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white mt-12">
+    <SafeAreaView className="flex-1 bg-white mt-12">
       <ScrollView 
         showsVerticalScrollIndicator={false}
         className="flex-1"
@@ -163,6 +165,7 @@ export default function ProfileScreen() {
               icon="person-outline" 
               label="Edit Profile" 
               onPress={() => {}} 
+              color='black'
             />
             
             <CardDivider />
@@ -171,6 +174,20 @@ export default function ProfileScreen() {
               icon="key-outline" 
               label="Change Password" 
               onPress={() => {}} 
+              color='black'
+            />
+            <CardDivider />
+            
+            <ProfileMenuItem 
+              icon="people-outline" 
+              label="Manage Teaching Assistants " 
+              onPress={() => {
+                router.push({
+                  pathname: '/attendance/manageTA',
+                  params: { email: user?.email }
+                })
+              }} 
+              color='black'
             />
           </CardContent>
         </Card>
@@ -185,7 +202,7 @@ export default function ProfileScreen() {
           <Text className="text-white font-semibold text-base">Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
