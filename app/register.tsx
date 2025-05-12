@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image, 
-  KeyboardAvoidingView, 
-  Platform, 
-  ScrollView, 
+import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
   ActivityIndicator,
   Dimensions,
-  StatusBar,
+  Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useAuth } from '@/context/AuthContext';
-import { Link } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
 
 const ROLES = ['FACULTY', 'STAFF', 'ADMIN'];
 
@@ -94,8 +94,8 @@ export default function RegisterScreen() {
       >
         <View style={styles.headerContainer}>
           <Image 
-            source={require('@/assets/images/logo.png')} 
-            style={styles.logo}
+            source={require('@/assets/images/nit_logo.png')} 
+            className='w-40 h-40 mb-4'
             resizeMode="contain"
           />
           <Text style={styles.title}>Create Account</Text>
@@ -413,7 +413,6 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: '#9BA1A6',
   },
-  // Modal styles
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',

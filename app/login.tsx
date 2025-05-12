@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Image, 
-  StyleSheet, 
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { useAuth } from '@/context/AuthContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
   StatusBar,
-  TouchableOpacity
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Link } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
 import Toast from 'react-native-toast-message';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { spacing, layout, borderRadius } from '@/constants/Spacing';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/constants/Colors';
+
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,47 +52,51 @@ export default function LoginScreen() {
     }
   };
 
+  const { width } = Dimensions.get('window');
+
   return (
-    <ThemedView style={styles.container}>
+    <View className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
+        className="flex-1"
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContainer}
+          className="flex-grow px-6 pt-10 pb-10"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.headerContainer}>
+          <View className="items-center mb-8">
             <Image 
-              source={require('@/assets/images/logo.png')} 
-              style={styles.logo}
+              source={require('@/assets/images/nit_logo.png')} 
+              className="w-40 h-40 mb-4"
               resizeMode="contain"
             />
-            <ThemedText variant="displaySmall" style={styles.title}>
+            <Text 
+              className="text-[28px] font-bold mb-2 text-gray-800"
+            >
               Welcome Back
-            </ThemedText>
-            <ThemedText variant="bodyMedium" style={{ color: textSecondaryColor }}>
+            </Text>
+            <Text 
+              className="text-gray-600"
+            >
               Login to your teacher account
-            </ThemedText>
+            </Text>
           </View>
 
           {error && (
-            <ThemedView 
-              style={styles.errorContainer}
-              lightColor="#FFEBEE"
+            <View 
+              className="rounded-md p-4 mb-5 border-l-4 border-l-[#D32F2F] bg-red-50"
             >
-              <ThemedText 
-                variant="bodySmall" 
-                style={{ color: errorColor }}
+              <Text 
+                className="text-red-600"
               >
                 {error}
-              </ThemedText>
-            </ThemedView>
+              </Text>
+            </View>
           )}
 
-          <View style={styles.formContainer}>
+          <View className="mb-8 px-3">
             <Input
               label="Email Address"
               leftIcon="mail-outline"
@@ -105,6 +106,7 @@ export default function LoginScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              className=''
             />
 
             <Input
@@ -117,13 +119,12 @@ export default function LoginScreen() {
               autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <ThemedText 
-                variant="labelSmall" 
-                style={{ color: primaryColor }}
+            <TouchableOpacity className="self-end mb-4 mt-1">
+              <Text 
+                className="text-sky-600"
               >
                 Forgot Password?
-              </ThemedText>
+              </Text>
             </TouchableOpacity>
 
             <Button
@@ -132,112 +133,48 @@ export default function LoginScreen() {
               onPress={handleLogin}
               loading={isLoading}
               fullWidth
-              style={styles.loginButton}
+              style={{ marginTop: 16,
+                backgroundColor: '#0369a1',
+              }}
             >
               Login
             </Button>
           </View>
 
-          <View style={styles.termsContainer}>
-            <ThemedText 
-              variant="caption" 
-              style={styles.termsText}
+          <View className="mb-8">
+            <Text 
+              className="text-center leading-5 text-gray-600"
             >
               By logging in, you agree to our{' '}
-              <ThemedText 
-                variant="caption" 
-                style={{ color: primaryColor }}
+              <Text 
+                className="text-sky-600"
               >
                 Terms of Service
-              </ThemedText> and{' '}
-              <ThemedText 
-                variant="caption" 
-                style={{ color: primaryColor }}
+              </Text> and{' '}
+              <Text 
+                className="text-sky-600"
               >
                 Privacy Policy
-              </ThemedText>
-            </ThemedText>
+              </Text>
+            </Text>
           </View>
 
-          <View style={styles.footer}>
-            <ThemedText variant="bodyMedium">
+          <View className="flex-row justify-center items-center">
+            <Text className="text-gray-700">
               Don't have an account?{' '}
-            </ThemedText>
+            </Text>
             <Link href="/register" asChild>
               <TouchableOpacity>
-                <ThemedText 
-                  variant="labelLarge" 
-                  style={{ color: primaryColor }}
+                <Text 
+                  className="text-sky-600 font-semibold"
                 >
                   Register
-                </ThemedText>
+                </Text>
               </TouchableOpacity>
             </Link>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ThemedView>
+    </View>
   );
 }
-
-const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingHorizontal: layout.screenPaddingHorizontal,
-    paddingTop: spacing[40],
-    paddingBottom: spacing[40],
-  },
-  headerContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  logo: {
-    width: width * 0.25,
-    height: width * 0.25,
-    marginBottom: spacing.md,
-  },
-  title: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      color: Colors.light.tint,
-      marginBottom: 8,
-    },
-  formContainer: {
-    marginBottom: spacing.xl,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: spacing.md,
-    marginTop: spacing.xs,
-  },
-  loginButton: {
-    marginTop: spacing.md,
-  },
-  termsContainer: {
-    marginBottom: spacing.xl,
-  },
-  termsText: {
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    borderLeftWidth: 4,
-    borderLeftColor: '#D32F2F',
-  },
-});

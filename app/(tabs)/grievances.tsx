@@ -1,11 +1,10 @@
 
 "use client";
-import { EXPO_AUTH_API_URL } from "@env";
-import { useCallback, useEffect, useState } from "react";
-import Toast from "react-native-toast-message";
 import { useAuth } from "@/context/AuthContext";
-import { useFocusEffect, useRouter } from "expo-router";
+import { EXPO_AUTH_API_URL } from "@env";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,10 +13,10 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 import TimeAgo from "@/components/TimeAgo";
 import { icons } from "@/constants/icons";
@@ -290,7 +289,7 @@ export default function GrievanceScreen() {
           setGrievanceVisible(true);
         }}
       >
-        <View className="line bg-gray-200 w-full h-[1.5px] my-2 shadow-sm shadow-slate-400"></View>
+        <View className="line bg-gray-300 w-full h-[1.5px] my-2 shadow-sm shadow-gray-400"></View>
         <View className="px-4 pb-4">
           <View className="flex-row justify-left items-center gap-3">
             <View className="flex-row justify-left items-center gap-3">
@@ -316,17 +315,17 @@ export default function GrievanceScreen() {
           <Text className="text-gray-600 mb-3">{item.description}</Text>
           {item.category && (
             <View style={{
-              backgroundColor: '#FEF3C7', 
+              backgroundColor: '#E5E7EB', 
               paddingHorizontal: 12,
               paddingVertical: 6,
               borderRadius: 20,
               alignSelf: 'flex-start',
               marginBottom: 10,
               borderWidth: 1,
-              borderColor: '#FCD34D', 
+              borderColor: '#9CA3AF', 
             }}>
               <Text style={{
-                color: '#92400E', 
+                color: '#374151', 
                 fontWeight: '500',
                 fontSize: 12,
               }}>{item.category}</Text>
@@ -336,7 +335,7 @@ export default function GrievanceScreen() {
             
             <View className="flex-row justify-center items-center px-2">
               <Pressable
-                className="flex-row gap-2 items-center border border-gray-300 bg-white p-2 px-4 rounded-full ml-1 mt-1"
+                className="flex-row gap-2 items-center border border-gray-400 bg-gray-100 p-2 px-4 rounded-full ml-1 mt-1"
                 style={{ elevation: 1 }}
                 onPressIn={() => {
                   setGrievanceItem(item);
@@ -344,19 +343,20 @@ export default function GrievanceScreen() {
                 }}
               >
                 <Image source={icons.comment} className="size-5" />
-                <Text className="text-md text-gray-600 font-bold px-1">
+                <Text className="text-md text-gray-700 font-bold px-1">
                   {item.comment_count}
                 </Text>
               </Pressable>
             </View>
             <Pressable 
-              className="flex-row gap-2 border rounded-full px-3 py-1 items-center "
+              className="flex-row gap-2 border border-gray-500 bg-gray-200 rounded-full px-3 py-1 items-center"
+              style={{ elevation: 1 }}
               onPress={() => {
                 resolveIssue(item.c_id);
               }}
             >
-              <Ionicons name="checkmark" size={24} color="green" />
-              <Text>Resolved</Text>
+              <Ionicons name="checkmark" size={24} color="#374151" />
+              <Text className="text-gray-700 font-medium">Resolved</Text>
             </Pressable>
           </View>
         </View>
@@ -365,22 +365,22 @@ export default function GrievanceScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 relative bg-[#72726f]">
-      <View className="flex-1 relative bg-[#fbf7f7]">
+    <SafeAreaView className="flex-1 relative bg-neutral-800">
+      <View className="flex-1 relative bg-white">
         <View className="flex-row justify-between mb-5 p-4">
-          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
+          <View className="bg-neutral-700 rounded-lg p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.total_complaints}
             </Text>
             <Text className="text-white">Total</Text>
           </View>
-          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
+          <View className="bg-neutral-800 rounded-lg p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.unresolved_complaints}
             </Text>
             <Text className="text-white">Pending</Text>
           </View>
-          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
+          <View className="bg-neutral-900 rounded-lg p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.resolved_complaints}
             </Text>
@@ -390,7 +390,7 @@ export default function GrievanceScreen() {
         <View className="z-10">
           <View className="flex-row justify-between items-center px-4 pb-2">
             <Text
-              className="text-3xl font-bold"
+              className="text-3xl font-bold text-gray-800"
             >
               Recent Issues
             </Text>
@@ -419,7 +419,7 @@ export default function GrievanceScreen() {
 
           {viewSelectedCategory ? (
             <View style={{
-              backgroundColor: '#FEF3C7', 
+              backgroundColor: '#E5E7EB', 
               marginHorizontal: 16,
               marginBottom: 12,
               padding: 10,
@@ -428,11 +428,11 @@ export default function GrievanceScreen() {
               alignItems: 'center',
               justifyContent: 'space-between'
             }}>
-              <Text style={{ color: '#92400E', fontWeight: '500' }}>
+              <Text style={{ color: '#374151', fontWeight: '500' }}>
                 Viewing: {viewSelectedCategory}
               </Text>
               <TouchableOpacity onPress={() => setViewSelectedCategory('')}>
-                <Ionicons name="close-circle" size={20} color="#92400E" />
+                <Ionicons name="close-circle" size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
           ) : null}
@@ -476,12 +476,12 @@ export default function GrievanceScreen() {
                     padding: 12,
                     borderBottomWidth: index === options.length - 1 ? 0 : 1,
                     borderBottomColor: '#F3F4F6',
-                    backgroundColor: viewSelectedCategory === option ? '#FEF3C7' : 'transparent',
+                    backgroundColor: viewSelectedCategory === option ? '#E5E7EB' : 'transparent',
                     borderRadius: 6,
                   }}
                 >
                   <Text style={{
-                    color: viewSelectedCategory === option ? '#92400E' : '#4B5563',
+                    color: viewSelectedCategory === option ? '#111827' : '#4B5563',
                     fontWeight: viewSelectedCategory === option ? '600' : 'normal'
                   }}>
                     {option}
@@ -494,7 +494,7 @@ export default function GrievanceScreen() {
 
         {grievances?.length === 0 ? (
           <View className="h-40 w-full justify-center">
-            <ActivityIndicator size="large" color="#cb612a" />
+            <ActivityIndicator size="large" color="#4B5563" />
           </View>
         ) : (
           <FlatList
@@ -527,14 +527,14 @@ export default function GrievanceScreen() {
           }}
           style={styles.detail_modal}
         >
-          <View className="bg-white rounded-2xl p-5 m-4">
+          <View className="bg-gray-100 rounded-2xl p-5 m-4 border border-gray-300">
             <View className="relative">
               <Pressable
                 onPress={() => {
                   setGrievanceVisible(false);
                   setGrievanceItem(null);
                 }}
-                className="absolute -right-8 -top-8 bg-white p-3 rounded-full"
+                className="absolute -right-8 -top-8 bg-gray-200 p-3 rounded-full"
                 style={{ elevation: 7 }}
               >
                 <Image
@@ -545,10 +545,10 @@ export default function GrievanceScreen() {
               </Pressable>
             </View>
 
-            <Text className="text-black font-bold text-xl mb-2">
+            <Text className="text-gray-900 font-bold text-xl mb-2">
               {grievanceItem?.title}
             </Text>
-            <Text className="text-gray-600 mb-4">
+            <Text className="text-gray-700 mb-4">
               {grievanceItem?.description}
             </Text>
             <Text className="text-gray-500 mb-6">
@@ -556,17 +556,17 @@ export default function GrievanceScreen() {
               {grievanceItem ? <TimeAgo date={grievanceItem.created_at} /> : ""}
             </Text>
 
-            <Text className="text-lg font-bold mb-3">Comments</Text>
+            <Text className="text-gray-800 font-bold text-lg mb-3">Comments</Text>
             <FlatList
               data={comments || []}
               keyExtractor={(item) => item.comment_id}
               renderItem={({ item }) => {
                 return (
-                  <View className="bg-gray-50 rounded-lg p-3 mb-2">
+                  <View className="bg-gray-200 rounded-lg p-3 mb-2 border border-gray-300">
                     <Text className="text-gray-800">{item.c_message}</Text>
                     <TimeAgo
                       date={item.created_at}
-                      className="text-gray-400 text-xs mt-1"
+                      className="text-gray-500 text-xs mt-1"
                     />
                   </View>
                 );

@@ -43,7 +43,7 @@ export const Colors = {
     info: '#1E3A8A',
     
     // Legacy support
-    tint: '#1E3A8A',
+    tint: '#0369a1',
     icon: '#4B5563',
   },
   dark: {
