@@ -9,7 +9,6 @@ import { Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpac
 
 const screenWidth = Dimensions.get('window').width;
 
-// Light mode colors
 const COLORS = {
   primary: '#4361ee',
   secondary: '#3f37c9',
@@ -23,7 +22,6 @@ const COLORS = {
   divider: '#e0e0e0',
 };
 
-// Font sizes
 const FONT_SIZES = {
   displaySmall: 24,
   headingMedium: 18,
@@ -40,7 +38,6 @@ interface CourseType {
   total_classes: number;
 }
 
-// Card components
 function Card({ children, style }: { children: React.ReactNode, style?: any }) {
   return (
     <View style={[styles.card, { backgroundColor: COLORS.card, borderColor: COLORS.border }, style]}>
@@ -75,10 +72,8 @@ export default function AttendanceScreen() {
   
   
   
-  // AsyncStorage keys
   const COURSES_STORAGE_KEY = '@teacher_courses';
   
-  // Load cached courses data
   const loadCachedCourses = async () => {
     try {
       const cachedData = await AsyncStorage.getItem(COURSES_STORAGE_KEY);
@@ -91,7 +86,6 @@ export default function AttendanceScreen() {
     }
   };
   
-  // Save courses data to AsyncStorage
   const cacheCourses = async (coursesData: CourseType[]) => {
     try {
       await AsyncStorage.setItem(COURSES_STORAGE_KEY, JSON.stringify(coursesData));
@@ -107,7 +101,6 @@ export default function AttendanceScreen() {
       
       const coursesData = await getCourses(user.email);
       setCourses(coursesData);
-      // Cache the new data
       cacheCourses(coursesData);
       setLoading(false);
     } catch (error) {
@@ -122,7 +115,6 @@ export default function AttendanceScreen() {
     setRefreshing(false);
   }, [user]);
   
-  // Load cached data on initial render
   useEffect(() => {
     loadCachedCourses();
   }, []);
@@ -134,7 +126,7 @@ export default function AttendanceScreen() {
   );
 
   return (
-    <View className="mt-12" style={[styles.container, { backgroundColor: COLORS.background }]}>
+    <View style={[styles.container, { backgroundColor: COLORS.background }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -142,9 +134,9 @@ export default function AttendanceScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={COLORS.text} // Black in light mode
+            tintColor={COLORS.text} 
             colors={[COLORS.text]}
-            progressBackgroundColor={COLORS.background} // White in light mode
+            progressBackgroundColor={COLORS.background} 
           />
         }
       >

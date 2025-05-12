@@ -5,6 +5,7 @@ import { EXPO_AUTH_API_URL } from "@env";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { StatusBar } from 'expo-status-bar';
 import {
   ActivityIndicator,
   FlatList,
@@ -82,7 +83,7 @@ export default function GrievanceScreen() {
     "Sports",
     "Others",];
 
-
+  
   const handleOptionSelect = (option: string) => {
     if (viewSelectedCategory === option) {
       setViewSelectedCategory('');
@@ -107,10 +108,8 @@ export default function GrievanceScreen() {
   }, []);
 
   const resolveIssue = async (c_id: string) => {
-    console.log('Resolving issue:', c_id);
     
     const res=await addResolver(c_id, user_id);
-    console.log('Resolver added:', res);
     
   }
   const onRefresh = () => {
@@ -174,10 +173,8 @@ export default function GrievanceScreen() {
 
       if (keysToRemove.length > 0) {
         await AsyncStorage.multiRemove(keysToRemove);
-        console.log("Old comment caches cleared:", keysToRemove);
       }
     } catch (error) {
-      console.error("Error clearing old comment caches:", error);
     }
   };
   const loadGrievances = async () => {
@@ -366,6 +363,7 @@ export default function GrievanceScreen() {
 
   return (
     <SafeAreaView className="flex-1 relative bg-neutral-800">
+      <StatusBar style="dark" backgroundColor="#fff" />
       <View className="flex-1 relative bg-white">
         <View className="flex-row justify-between mb-5 p-4">
           <View className="bg-neutral-700 rounded-lg p-5 flex-1 m-1 items-center">
@@ -390,7 +388,7 @@ export default function GrievanceScreen() {
         <View className="z-10">
           <View className="flex-row justify-between items-center px-4 pb-2">
             <Text
-              className="text-3xl font-bold text-gray-800"
+              className="text-3xl font-bold text-gray-800 pb-4"
             >
               Recent Issues
             </Text>

@@ -2,7 +2,6 @@ import { EXPO_TEACHER_API_URL } from '@env';
 
 export const getStudents = async (courseCode: string) => {
   try {
-    console.log('Fetching students for course code:', courseCode);
     
     const response = await fetch(`${EXPO_TEACHER_API_URL}/api/teacher/courses/${courseCode}/students`);
     if (!response.ok) {
@@ -10,7 +9,6 @@ export const getStudents = async (courseCode: string) => {
     }
 
     const data = await response.json();
-    console.log('data in get students ',data);
     
     return data
   } catch (error) {

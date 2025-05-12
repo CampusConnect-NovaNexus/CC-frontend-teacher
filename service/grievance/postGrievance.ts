@@ -18,7 +18,6 @@ export const postGrievance = async ({user_id,title,description,category}:{user_i
      
     });
     const data=await response.json();
-    console.log('postGrievance : ',data);
     
     return data
   } catch (error) {

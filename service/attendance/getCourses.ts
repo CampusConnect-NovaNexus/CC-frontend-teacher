@@ -3,7 +3,6 @@ import { EXPO_TEACHER_API_URL } from '@env';
 
 export const getCourses = async (email: string) => {
   console.log(EXPO_TEACHER_API_URL);
-  console.log(email);
   try {
     const response = await fetch(`${EXPO_TEACHER_API_URL}/api/teacher/courses?email=${encodeURIComponent(email)}`);
     

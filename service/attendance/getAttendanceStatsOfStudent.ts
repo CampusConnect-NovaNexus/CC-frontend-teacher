@@ -16,7 +16,6 @@ export const getAttendanceStats = async (
       throw new Error(`Failed to get attendance stats: ${response.status}`);
     }
     const data = await response.json();
-    console.log('Attendance stats:', data);
     
     return data;
   } catch (error) {

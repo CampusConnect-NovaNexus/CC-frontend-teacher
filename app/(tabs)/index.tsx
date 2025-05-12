@@ -34,7 +34,6 @@ export default function DashboardScreen() {
     setRefreshing(true);
 
     setTimeout(() => {
-      console.log("Refreshing data...");
 
       loadStats();
       setRefreshing(false);
@@ -43,10 +42,8 @@ export default function DashboardScreen() {
   
   const primaryColor = useThemeColor({}, "primary");
   const loadStats = async () => {
-    console.log("Loading stats...");
 
     const res = await getStats();
-    console.log("res : ", res);
 
     setStats({
       pendingGrievances: res?.unresolved_complaints || 0,
@@ -77,7 +74,7 @@ export default function DashboardScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white mt-12">
+    <View className="flex-1 bg-white mt-8">
       <ScrollView
         className="px-4 pb-20"
         showsVerticalScrollIndicator={false}

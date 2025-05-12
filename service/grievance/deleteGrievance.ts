@@ -9,7 +9,6 @@ export const deleteGrievance = async (c_id: string) => {
           method: 'DELETE',
         });
         const data=response.json();
-        console.log('Complaint Deleted:', data);
         return data;
   } catch (error) {
     console.error('Delete Complaint Error:', error);

@@ -35,7 +35,6 @@ interface LowAttendanceData {
   end_date?: string;
 }
 
-// Colors for black and white theme
 const COLORS = {
   primary: '#000000',
   background: '#ffffff',
@@ -64,7 +63,6 @@ export default function LowAttendanceScreen() {
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // AsyncStorage keys
   const COURSES_STORAGE_KEY = '@teacher_low_attendance_courses';
   const getLowAttendanceStorageKey = (courseCode: string, startDate?: Date, endDate?: Date) => {
     const dateParams = startDate || endDate 
@@ -73,7 +71,6 @@ export default function LowAttendanceScreen() {
     return `@low_attendance_${courseCode}${dateParams}`;
   };
 
-  // Load cached courses
   const loadCachedCourses = async () => {
     try {
       const cachedData = await AsyncStorage.getItem(COURSES_STORAGE_KEY);
@@ -89,7 +86,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Cache courses
   const cacheCourses = async (coursesData: CourseType[]) => {
     try {
       await AsyncStorage.setItem(COURSES_STORAGE_KEY, JSON.stringify(coursesData));
@@ -98,7 +94,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Load cached low attendance data
   const loadCachedLowAttendanceData = async (courseCode: string) => {
     if (!courseCode) return false;
     
@@ -118,7 +113,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Cache low attendance data
   const cacheLowAttendanceData = async (data: LowAttendanceData, courseCode: string) => {
     try {
       const storageKey = getLowAttendanceStorageKey(courseCode, startDate || undefined, endDate || undefined);
@@ -128,7 +122,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Fetch courses
   const fetchCourses = async (showLoading = true) => {
     if (!user?.email) return;
     
@@ -145,7 +138,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Fetch low attendance data
   const fetchLowAttendanceData = async (courseCode: string, showLoading = true) => {
     if (!courseCode) return;
     
@@ -169,17 +161,13 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Handle course selection
   const handleCourseChange = (courseCode: string) => {
     setSelectedCourseCode(courseCode);
     if (courseCode) {
-      // First try to load cached data
       loadCachedLowAttendanceData(courseCode).then(hasCachedData => {
-        // If no cached data or we need fresh data anyway, fetch from API
         if (!hasCachedData) {
           setLoading(true);
         }
-        // Always fetch fresh data, but we might already be showing cached data
         fetchLowAttendanceData(courseCode, !hasCachedData);
       });
     } else {
@@ -187,7 +175,6 @@ export default function LowAttendanceScreen() {
     }
   };
 
-  // Handle refresh
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchCourses(false);
@@ -197,7 +184,6 @@ export default function LowAttendanceScreen() {
     setRefreshing(false);
   }, [selectedCourseCode]);
 
-  // Date picker handlers
   const handleStartDateChange = (event: any, selectedDate?: Date) => {
     setShowStartPicker(false);
     if (selectedDate) {
@@ -231,18 +217,14 @@ export default function LowAttendanceScreen() {
     return date.toISOString().split('T')[0];
   };
 
-  // Initial data loading
   useEffect(() => {
     const initializeData = async () => {
-      // First try to load cached courses
       const hasCachedCourses = await loadCachedCourses();
       
-      // If no cached courses or we need fresh data anyway, fetch from API
       if (!hasCachedCourses) {
         setLoadingCourses(true);
       }
       
-      // Always fetch fresh courses, but we might already be showing cached data
       if (user?.email) {
         fetchCourses(!hasCachedCourses);
       }
@@ -251,7 +233,6 @@ export default function LowAttendanceScreen() {
     initializeData();
   }, [user]);
 
-  // Render student item
   const renderStudentItem = ({ item }: { item: StudentWithLowAttendance }) => (
     <View style={[styles.studentCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
       <View style={styles.studentHeader}>
@@ -284,13 +265,11 @@ export default function LowAttendanceScreen() {
           }}
         >
           <Ionicons name="mail-outline" size={22} color="#ffffff" />
-          {/* <Text style={styles.buttonText}>Notify</Text> */}
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  // Render empty state
   const renderEmptyState = () => (
     <View style={[styles.emptyState, { borderColor: COLORS.success }]}>
       <Ionicons name="checkmark-circle-outline" size={48} color={COLORS.success} />

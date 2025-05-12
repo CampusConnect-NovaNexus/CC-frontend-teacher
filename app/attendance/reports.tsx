@@ -1,5 +1,4 @@
 import SimpleBarChart from '@/components/SimpleBarChart';
-import SimpleLineChart from '@/components/SimpleLineChart';
 import { useAuth } from '@/context/AuthContext';
 import { getAttendanceStatsOfClass } from '@/service/attendance/getAttendanceStatsOfClass';
 import { getCourseAttendanceStats } from '@/service/attendance/getCourseAttendancePercentage';
@@ -13,11 +12,10 @@ const screenWidth = Dimensions.get('window').width;
 
 type PeriodType = 'weekly' | 'monthly' | 'semester';
 
-// Helper function to get date ranges based on period
 const getDateRanges = (period: PeriodType) => {
   const today = new Date();
   let startDate: Date;
-  
+
   if (period === 'weekly') {
     // Last 7 days
     startDate = new Date(today);
@@ -31,7 +29,7 @@ const getDateRanges = (period: PeriodType) => {
     startDate = new Date(today);
     startDate.setMonth(today.getMonth() - 6);
   }
-  
+
   return {
     startDate: startDate.toISOString().split('T')[0],
     endDate: today.toISOString().split('T')[0]
@@ -80,7 +78,7 @@ export default function AttendanceReportsScreen() {
   const [courseStats, setCourseStats] = useState<AttendanceStats[]>([]);
   const [studentStats, setStudentStats] = useState<CourseAttendance[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Data for charts
   const [attendanceTrendLabels, setAttendanceTrendLabels] = useState<string[]>([]);
   const [attendanceTrendData, setAttendanceTrendData] = useState<number[]>([]);
@@ -91,47 +89,42 @@ export default function AttendanceReportsScreen() {
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.email) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         // Get date ranges based on selected period
         const { startDate, endDate } = getDateRanges(selectedPeriod);
-        
+
         // Fetch courses
         const coursesData = await getCourses(user.email);
         setCourses(coursesData);
-        
-        // Fetch attendance stats for each course
-        const statsPromises = coursesData.map((course: Course) => 
+
+        const statsPromises = coursesData.map((course: Course) =>
           getAttendanceStatsOfClass(course.course_code, startDate, endDate)
         );
-        
-        const attendancePromises = coursesData.map((course: Course) => 
+
+        const attendancePromises = coursesData.map((course: Course) =>
           getCourseAttendanceStats(course.course_code, startDate, endDate)
         );
-        
+
         const allStats = await Promise.all(statsPromises);
         const allAttendance = await Promise.all(attendancePromises);
-        
+
         setCourseStats(allStats);
         setStudentStats(allAttendance);
-        
-        // Prepare data for charts
+
         const courseLabels = coursesData.map((course: Course) => course.course_code);
         const attendanceData = allStats.map((stat: AttendanceStats) => stat.attendance_percentage);
-        
+
         setClassComparisonLabels(courseLabels);
         setClassComparisonData(attendanceData);
-        
-        // For trend chart, we'll use the most recent data
-        // This would ideally be time-series data, but we'll use what we have
+
         if (allStats.length > 0) {
-          // For simplicity, we'll use the first course's data for the trend
           const trendLabels = coursesData.map((course: Course) => course.course_code);
           const trendData = allStats.map((stat: AttendanceStats) => stat.attendance_percentage);
-          
+
           setAttendanceTrendLabels(trendLabels);
           setAttendanceTrendData(trendData);
         }
@@ -142,48 +135,47 @@ export default function AttendanceReportsScreen() {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [user?.email, selectedPeriod]);
-  
-  // Calculate summary statistics
+
   const getHighestAttendance = () => {
     if (courseStats.length === 0) return { percentage: 0, course: '' };
-    
-    const highest = courseStats.reduce((prev, current) => 
+
+    const highest = courseStats.reduce((prev, current) =>
       (prev.attendance_percentage > current.attendance_percentage) ? prev : current
     );
-    
+
     const course = courses.find((c: Course) => c.course_code === highest.course_code);
-    
+
     return {
       percentage: highest.attendance_percentage,
       course: highest.course_code + (course ? ` - ${course.course_name}` : '')
     };
   };
-  
+
   const getLowestAttendance = () => {
     if (courseStats.length === 0) return { percentage: 0, course: '' };
-    
-    const lowest = courseStats.reduce((prev, current) => 
+
+    const lowest = courseStats.reduce((prev, current) =>
       (prev.attendance_percentage < current.attendance_percentage) ? prev : current
     );
-    
+
     const course = courses.find((c: Course) => c.course_code === lowest.course_code);
-    
+
     return {
       percentage: lowest.attendance_percentage,
       course: lowest.course_code + (course ? ` - ${course.course_name}` : '')
     };
   };
-  
+
   const getAverageAttendance = () => {
     if (courseStats.length === 0) return 0;
-    
+
     const sum = courseStats.reduce((total, stat) => total + stat.attendance_percentage, 0);
     return (sum / courseStats.length).toFixed(2);
   };
-  
+
   const highest = getHighestAttendance();
   const lowest = getLowestAttendance();
   const average = getAverageAttendance();
@@ -195,12 +187,12 @@ export default function AttendanceReportsScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView 
-        className="px-4 pb-8"
+      <ScrollView
+        className="px-4 pb-96"
         showsVerticalScrollIndicator={false}
       >
         <View className="flex-row items-center mt-12 mb-6">
-          <TouchableOpacity 
+          <TouchableOpacity
             className="mr-3 p-1"
             onPress={() => router.back()}
           >
@@ -210,12 +202,12 @@ export default function AttendanceReportsScreen() {
             Attendance Reports
           </Text>
         </View>
-        
+
         {/* Period Selection */}
         <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
           <Text className="text-lg font-bold text-gray-800 mb-2">Time Period</Text>
           <View className="flex-row px-2">
-            <TouchableOpacity 
+            <TouchableOpacity
               className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'weekly' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
               onPress={() => handlePeriodChange('weekly')}
             >
@@ -223,8 +215,8 @@ export default function AttendanceReportsScreen() {
                 Weekly
               </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'monthly' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
               onPress={() => handlePeriodChange('monthly')}
             >
@@ -232,8 +224,8 @@ export default function AttendanceReportsScreen() {
                 Monthly
               </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'semester' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
               onPress={() => handlePeriodChange('semester')}
             >
@@ -243,7 +235,7 @@ export default function AttendanceReportsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {loading ? (
           <View className="items-center justify-center py-10">
             <ActivityIndicator size="large" color="#000" />
@@ -252,7 +244,7 @@ export default function AttendanceReportsScreen() {
         ) : error ? (
           <View className="bg-red-50 p-4 rounded-xl mb-5 border border-red-100">
             <Text className="text-red-800">{error}</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               className="bg-red-800 px-4 py-2 rounded-lg mt-2 self-start"
               onPress={() => {
                 const { startDate, endDate } = getDateRanges(selectedPeriod);
@@ -273,85 +265,42 @@ export default function AttendanceReportsScreen() {
             <View className="bg-white rounded-xl shadow-sm mb-5 p-4 min-h-[35%] h-fit border border-gray-100">
               <Text className="text-lg font-bold text-gray-800 mb-2">Attendance Trend</Text>
               {attendanceTrendData.length > 0 ? (
-                <SimpleLineChart
-                  data={attendanceTrendData}
-                  labels={attendanceTrendLabels}
-                  width={screenWidth - 40}
-                  height={300}
-                  color="#000000"
-                  title="Average Attendance (%)"
-                />
+                  <SimpleBarChart
+                    data={attendanceTrendData}
+                    labels={attendanceTrendLabels}
+                    width={screenWidth - 56}
+                    height={300}
+                    color="#000000"
+                    title="Average Attendance (%)"
+                  />
+
               ) : (
                 <View className="items-center justify-center py-10">
                   <Text className="text-gray-500">No attendance data available</Text>
                 </View>
               )}
             </View>
-            
+
             {/* Class Comparison Chart */}
             <View className="bg-white rounded-xl shadow-sm mb-5 p-4 min-h-[35%] h-fit border border-gray-100">
               <Text className="text-lg font-bold text-gray-800 mb-2">Class Comparison</Text>
               {classComparisonData.length > 0 ? (
-                
+
                 <SimpleBarChart
                   data={classComparisonData}
                   labels={classComparisonLabels}
-                  width={screenWidth - 40}
-                  height={300}
+                  width={screenWidth - 56}
+                  height={350}
                   color="#000000"
                   title="Class Attendance (%)"
                 />
-                
+
               ) : (
                 <View className="items-center justify-center py-10">
                   <Text className="text-gray-500">No class comparison data available</Text>
                 </View>
               )}
             </View>
-            
-            {/* Statistics Summary */}
-            <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
-              <Text className="text-lg font-bold text-gray-800 mb-2">Summary Statistics</Text>
-              <View className="flex-row justify-between mb-4">
-                <View className="bg-blue-50 p-4 rounded-lg w-[48%] border border-blue-100">
-                  <Text className="text-sm font-medium text-blue-800">
-                    Highest Attendance
-                  </Text>
-                  <Text className="text-2xl font-bold text-blue-800">
-                    {highest.percentage.toFixed(1)}%
-                  </Text>
-                  <Text className="text-xs text-blue-800">
-                    {highest.course}
-                  </Text>
-                </View>
-                
-                <View className="bg-red-50 p-4 rounded-lg w-[48%] border border-red-100">
-                  <Text className="text-sm font-medium text-red-800">
-                    Lowest Attendance
-                  </Text>
-                  <Text className="text-2xl font-bold text-red-800">
-                    {lowest.percentage.toFixed(1)}%
-                  </Text>
-                  <Text className="text-xs text-red-800">
-                    {lowest.course}
-                  </Text>
-                </View>
-              </View>
-              
-              <View className="bg-green-50 p-4 rounded-lg w-full border border-green-100">
-                <Text className="text-sm font-medium text-green-800">
-                  Overall Average
-                </Text>
-                <Text className="text-2xl font-bold text-green-800">
-                  {average}%
-                </Text>
-                <Text className="text-xs text-green-800">
-                  Across all classes
-                </Text>
-              </View>
-            </View>
-            
-           
           </>
         )}
       </ScrollView>

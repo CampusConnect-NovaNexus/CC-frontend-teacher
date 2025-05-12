@@ -21,7 +21,6 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-// Types
 interface CourseType {
   course_code: string;
   Teacher: string[];
@@ -29,7 +28,6 @@ interface CourseType {
   total_classes: number;
 }
 
-// Colors for black and white theme
 const COLORS = {
   primary: '#000000',
   background: '#ffffff',
@@ -54,10 +52,8 @@ export default function ManageTAScreen() {
   const [removingTA, setRemovingTA] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // AsyncStorage key
   const COURSES_STORAGE_KEY = '@teacher_courses_with_ta';
 
-  // Load cached courses
   const loadCachedCourses = async () => {
     try {
       const cachedData = await AsyncStorage.getItem(COURSES_STORAGE_KEY);
@@ -113,7 +109,6 @@ export default function ManageTAScreen() {
     setRefreshing(false);
   }, [user]);
 
-  // Add TA to course
   const handleAddTA = async () => {
     if (!selectedCourseCode || !taEmail || !taEmail.trim()) {
       Toast.show({
@@ -130,10 +125,8 @@ export default function ManageTAScreen() {
       
       await addTAtoCourse(selectedCourseCode, taEmail.trim());
       
-      // Update the courses list
       await fetchCourses(false);
       
-      // Clear the input
       setTaEmail('');
       
       Toast.show({
@@ -174,7 +167,6 @@ export default function ManageTAScreen() {
               
               await removeTAfromCourse(courseCode, taEmail);
               
-              // Update the courses list
               await fetchCourses(false);
               
               Toast.show({
@@ -202,15 +194,12 @@ export default function ManageTAScreen() {
  
   useEffect(() => {
     const initializeData = async () => {
-      // First try to load cached courses
       const hasCachedCourses = await loadCachedCourses();
       
-      // If no cached courses or we need fresh data anyway, fetch from API
       if (!hasCachedCourses) {
         setLoading(true);
       }
       
-      // Always fetch fresh courses, but we might already be showing cached data
       const teacherEmail = email || user?.email;
       if (teacherEmail) {
         fetchCourses(!hasCachedCourses);
@@ -285,9 +274,7 @@ export default function ManageTAScreen() {
               </TouchableOpacity>
               <View>
                 <Text style={[styles.pageTitle, { color: COLORS.text }]}>Manage Teaching Asst.</Text>
-                <Text style={[styles.pageSubtitle, { color: COLORS.textSecondary }]}>
-                  Add or remove TAs from your courses
-                </Text>
+                
               </View>
             </View>
 
