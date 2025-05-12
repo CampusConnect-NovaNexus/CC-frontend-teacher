@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ADMIN 🔗",
+    "name": "ADMIN🔗",
     "slug": "frontend-teacher",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/logo.png",
     "scheme": "frontendteacher",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,22 +13,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.duhanjishnu.frontendteacher"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/logo.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/adaptive-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true

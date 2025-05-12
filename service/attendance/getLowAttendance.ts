@@ -23,7 +23,6 @@ export const getLowAttendanceStudents = async (
     }
     
     const data = await response.json();
-    console.log('Low attendance students data  :', data);
     return data;
   } catch (error) {
     console.error('Error fetching low attendance students:', error);

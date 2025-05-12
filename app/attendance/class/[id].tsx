@@ -125,7 +125,6 @@ export default function ClassAttendanceScreen() {
     try {
       setClassName(courseCode.toUpperCase() || "Unknown Class");
       const data = await getCourseAttendanceStats(courseCode, startDate?.toISOString(), endDate?.toISOString());
-      console.log("Data in loadStudents:", data);
       
       if (!data || !data.students || !Array.isArray(data.students)) {
         console.error("Invalid data format received:", data);
@@ -150,7 +149,6 @@ export default function ClassAttendanceScreen() {
         }
       });
       
-      console.log("Mapped Data:", mappedData);
       
       setStudents(mappedData);
       setFilteredStudents(mappedData);

@@ -87,7 +87,6 @@ const Forum = ({
             <Pressable
               className="w-12 h-12 rounded-full overflow-hidden"
               onPress={() => {
-                console.log("User profile pressed");
                 router.push({
                   pathname: "../userPostProfile",
                   params: {
@@ -109,11 +108,7 @@ const Forum = ({
           <View className="flex-1">
             <View className="flex-row items-center justify-between">
               <View>
-                <Pressable
-                  onPress={() => {
-                    console.log("User profile pressed");
-                  }}
-                >
+                <Pressable>
                   <Text className="font-bold">{userName}</Text>
                 </Pressable>
                 <Text className="text-xs text-gray-500">{userPosition}</Text>

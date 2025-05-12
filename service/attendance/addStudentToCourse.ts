@@ -21,7 +21,6 @@ export const addStudentToCourse = async (courseCode:string, name: string, roll_n
     }
 
     const data= await response.json();
-    console.log('Student added successfully:', data);
     
     return data;
   } catch (error) {
