@@ -1,13 +1,16 @@
 {
   "expo": {
-    "name": "ADMIN🔗",
+    "name": "Admin🔗",
     "slug": "frontend-teacher",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "scheme": "frontendteacher",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/adaptive-icon.png",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +19,6 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.duhanjishnu.frontendteacher"
     },
     "web": {
