@@ -186,10 +186,10 @@ export default function DashboardScreen() {
               </View>
               <View>
                 <Text className="text-white text-md font-semibold">
-                  Avg.
+                  Attendance
                 </Text>
                 <Text className="text-white text-md font-semibold">
-                  Attendance
+                  Reports
                 </Text>
               </View>
             </TouchableOpacity>

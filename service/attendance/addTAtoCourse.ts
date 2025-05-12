@@ -1,7 +1,7 @@
 import { EXPO_TEACHER_API_URL } from '@env';
 
 export const addTAtoCourse = async (courseCode: string, taEmail: string) => {
-    c
+    
     
   try {
     const response = await fetch(`${EXPO_TEACHER_API_URL}/api/teacher/courses/${courseCode}/ta`, {

@@ -1,4 +1,5 @@
 
+import { addStudentToCourse } from "@/service/attendance/addStudentToCourse";
 import { getCourseAttendanceStats } from "@/service/attendance/getCourseAttendancePercentage";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -8,14 +9,17 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Modal,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 const screenWidth = Dimensions.get("window").width;
 
 interface Student {
@@ -43,6 +47,12 @@ export default function ClassAttendanceScreen() {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const [isTakingAttendance, setIsTakingAttendance] = useState(false);
+  
+  // Add student modal states
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+  const [studentName, setStudentName] = useState('');
+  const [studentRollNo, setStudentRollNo] = useState('');
+  const [addingStudent, setAddingStudent] = useState(false);
 
   const attendanceLabels = ["Week 1", "Week 2", "Week 3", "Week 4"];
   const attendanceData = [85, 78, 92, 88];
@@ -69,6 +79,47 @@ export default function ClassAttendanceScreen() {
       setFilteredStudents(filtered);
     }
   }, [searchQuery, students]);
+
+  // Handle adding a student
+  const handleAddStudent = async () => {
+    if (!studentName.trim() || !studentRollNo.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter student name and roll number',
+      });
+      return;
+    }
+
+    try {
+      setAddingStudent(true);
+      
+      await addStudentToCourse(courseCode, studentName.trim(), studentRollNo.trim());
+      
+      // Clear the inputs and close modal
+      setStudentName('');
+      setStudentRollNo('');
+      setShowAddStudentModal(false);
+      
+      // Reload students list
+      await loadStudents();
+      
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Student added to course successfully',
+      });
+    } catch (error) {
+      console.error('Error adding student:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add student to course',
+      });
+    } finally {
+      setAddingStudent(false);
+    }
+  };
 
   const loadStudents = async () => {
     try {
@@ -145,6 +196,60 @@ export default function ClassAttendanceScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1">
         <View className="p-4">
+          
+          {/* Add Student Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showAddStudentModal}
+            onRequestClose={() => setShowAddStudentModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Add Student to {className}</Text>
+                  <TouchableOpacity onPress={() => setShowAddStudentModal(false)}>
+                    <Ionicons name="close" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
+                
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>Student Name</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter student name"
+                    placeholderTextColor="#666"
+                    value={studentName}
+                    onChangeText={setStudentName}
+                  />
+                </View>
+                
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>Roll Number</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter roll number"
+                    placeholderTextColor="#666"
+                    value={studentRollNo}
+                    onChangeText={setStudentRollNo}
+                    autoCapitalize="characters"
+                  />
+                </View>
+                
+                <TouchableOpacity 
+                  style={styles.addButton}
+                  onPress={handleAddStudent}
+                  disabled={addingStudent}
+                >
+                  {addingStudent ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text style={styles.addButtonText}>Add Student</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           {/* Header */}
           <View className="flex-row items-center mb-6">
             <TouchableOpacity 
@@ -277,6 +382,99 @@ export default function ClassAttendanceScreen() {
           </View>
         </View>
       </ScrollView>
+      
+      {/* Floating Action Button to add student */}
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={() => setShowAddStudentModal(true)}
+      >
+        <Ionicons name="person-add" size={24} color="white" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 20,
+    backgroundColor: 'black',
+    borderRadius: 28,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+    color: '#333',
+  },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    color: 'black',
+  },
+  addButton: {
+    height: 50,
+    borderRadius: 8,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

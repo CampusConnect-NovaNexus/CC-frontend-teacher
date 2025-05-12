@@ -23,7 +23,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
 }) => {
   if (data.length === 0) return null;
 
-  const padding = { top: 20, right: 20, bottom: 40, left: 40 };
+  const padding = { top: 30, right: 30, bottom: 60, left: 50 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   
@@ -89,8 +89,8 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
             <SvgText
               key={index}
               x={x}
-              y={height - padding.bottom + 15}
-              fontSize="10"
+              y={height - padding.bottom + 20}
+              fontSize="12"
               fill="#000000"
               textAnchor="middle"
             >
@@ -106,9 +106,9 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
           return (
             <SvgText
               key={index}
-              x={padding.left - 10}
+              x={padding.left - 15}
               y={y + 4}
-              fontSize="10"
+              fontSize="12"
               fill="#000000"
               textAnchor="end"
             >

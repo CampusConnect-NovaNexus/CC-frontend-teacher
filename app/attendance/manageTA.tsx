@@ -73,7 +73,7 @@ export default function ManageTAScreen() {
     }
   };
 
-  // Cache courses
+ 
   const cacheCourses = async (coursesData: CourseType[]) => {
     try {
       await AsyncStorage.setItem(COURSES_STORAGE_KEY, JSON.stringify(coursesData));
@@ -82,7 +82,7 @@ export default function ManageTAScreen() {
     }
   };
 
-  // Fetch courses
+ 
   const fetchCourses = async (showLoading = true) => {
     const teacherEmail = email || user?.email;
     if (!teacherEmail) return;
@@ -106,7 +106,7 @@ export default function ManageTAScreen() {
     }
   };
 
-  // Handle refresh
+  
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchCourses(false);
@@ -154,7 +154,7 @@ export default function ManageTAScreen() {
     }
   };
 
-  // Remove TA from course
+  
   const handleRemoveTA = async (courseCode: string, taEmail: string) => {
     Alert.alert(
       'Remove Teaching Assistant',
@@ -199,7 +199,7 @@ export default function ManageTAScreen() {
     );
   };
 
-  // Initial data loading
+ 
   useEffect(() => {
     const initializeData = async () => {
       // First try to load cached courses
@@ -220,7 +220,7 @@ export default function ManageTAScreen() {
     initializeData();
   }, [user, email]);
 
-  // Render TA item
+  
   const renderTAItem = ({ item, courseCode }: { item: string, courseCode: string }) => (
     <View style={[styles.taItem, { borderColor: COLORS.border }]}>
       <Text style={[styles.taEmail, { color: COLORS.text }]}>{item}</Text>
@@ -238,7 +238,7 @@ export default function ManageTAScreen() {
     </View>
   );
 
-  // Render course card
+  
   const renderCourseCard = ({ item }: { item: CourseType }) => (
     <View style={[styles.courseCard, { backgroundColor: COLORS.card, borderColor: COLORS.border }]}>
       <View style={styles.courseHeader}>
