@@ -9,6 +9,8 @@ import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { sendWarningEmail } from '@/service/attendance/sendWarningEmail';
+import Toast from 'react-native-toast-message';
 // Types
 interface CourseType {
   course_code: string;
@@ -272,22 +274,18 @@ export default function LowAttendanceScreen() {
       <View className='flex justify-end items-end'>
         <TouchableOpacity 
           className='bg-stone-800 flex-row items-center justify-center p-4 rounded-full mr-2'
-          onPress={() => {/* Send notification functionality would go here */}}
+          onPress={() => {
+            sendEmail(
+              item.student_roll_no  ,
+              user?.name || 'Admin',
+              item.student_name,
+              item.attendance_percentage
+            );
+          }}
         >
           <Ionicons name="mail-outline" size={22} color="#ffffff" />
           {/* <Text style={styles.buttonText}>Notify</Text> */}
         </TouchableOpacity>
-        
-        {/* <TouchableOpacity 
-          style={[styles.actionButton, { backgroundColor: COLORS.primary }]}
-          onPress={() => router.push({
-            pathname: "/attendance/student/[id]",
-            params: { id: item.student_roll_no }
-          })}
-        >
-          <Ionicons name="eye-outline" size={16} color="#ffffff" />
-          <Text style={styles.buttonText}>View Details</Text>
-        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -305,12 +303,46 @@ export default function LowAttendanceScreen() {
     </View>
   );
 
+  //sending email to user
+  const sendEmail=async(
+    to:string,
+    senderName:string,
+    studentName:string,
+    attendancePercentage:number,
+  )=>{
+    try {
+      const response = await sendWarningEmail({
+        to:to.toLowerCase()+'@nitm.ac.in',
+        senderName,
+        studentName,
+        attendancePercentage,
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Email Sent',
+        text2: `Email sent to ${studentName} (${to})`,
+        position: 'top',
+        visibilityTime: 1000,
+        autoHide: true,
+      })
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed To send Email to student '+studentName,
+        text2: 'Try again later',
+        position: 'top',
+        visibilityTime: 1000,
+        autoHide: true,
+      })
+    }
+  }
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
       <FlatList
         data={lowAttendanceData?.students_with_low_attendance || []}
         renderItem={renderStudentItem}
-        keyExtractor={(item) => item.student_id}
+        keyExtractor={(item) => item.student_roll_no}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <>
