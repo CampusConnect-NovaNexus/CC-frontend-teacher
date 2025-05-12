@@ -136,20 +136,6 @@ export default function AttendanceScreen() {
           </CardContent>
         </Card>
         
-        {/* Attendance Overview Chart */}
-        <Card style={styles.card}>
-          <CardHeader title="Monthly Overview" />
-          <CardContent>
-            <SimpleLineChart
-              data={attendanceData}
-              labels={attendanceLabels}
-              width={screenWidth - (layout.screenPaddingHorizontal * 2 + spacing.md * 2)}
-              height={220}
-              color={COLORS.primary}
-              title="Average Attendance (%)"
-            />
-          </CardContent>
-        </Card>
         
         {/* Classes */}
         <Card style={styles.card}>
@@ -181,6 +167,12 @@ export default function AttendanceScreen() {
                       <Text style={[styles.courseDetails, { color: COLORS.textSecondary }]}>
                         {course.total_classes} total classes
                       </Text>
+                      <Text>Teaching Assistances : </Text>
+                      {course.TA.map((ta, index) => (
+                        <Text key={index} className='text-sm text-gray-500'>
+                          {ta}
+                        </Text>
+                      ))}
                     </View>
                     <Ionicons name="chevron-forward" size={24} color={COLORS.icon} />
                   </View>
@@ -193,8 +185,8 @@ export default function AttendanceScreen() {
             )}
           </CardContent>
         </Card>
-        
         {/* Low Attendance Alert */}
+        
         <View 
           style={[styles.alertCard, { backgroundColor: `${COLORS.error}10`, borderColor: 'rgba(244, 67, 54, 0.3)' }]}
         >

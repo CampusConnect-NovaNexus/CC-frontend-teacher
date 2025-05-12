@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import SimpleBarChart from '@/components/SimpleBarChart';
+import SimpleLineChart from '@/components/SimpleLineChart';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import SimpleLineChart from '@/components/SimpleLineChart';
-import SimpleBarChart from '@/components/SimpleBarChart';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardContent } from '@/components/ui/Card';
-import { spacing, layout, borderRadius } from '@/constants/Spacing';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React, { useState } from 'react';
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -18,16 +12,6 @@ type PeriodType = 'weekly' | 'monthly' | 'semester';
 export default function AttendanceReportsScreen() {
   const [loading, setLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('monthly');
-  
-  // Get theme colors
-  const primaryColor = useThemeColor({}, 'primary');
-  const successColor = useThemeColor({}, 'success');
-  const errorColor = useThemeColor({}, 'error');
-  const infoColor = useThemeColor({}, 'info');
-  const textInverseColor = useThemeColor({}, 'textInverse');
-  const borderColor = useThemeColor({}, 'border');
-  const backgroundSecondaryColor = useThemeColor({}, 'backgroundSecondary');
-  const iconColor = useThemeColor({}, 'icon');
   
   // Mock data for attendance chart
   const monthlyLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
@@ -38,303 +22,159 @@ export default function AttendanceReportsScreen() {
   
   const classComparisonLabels = ['CS101', 'CS201', 'CS301', 'CS401'];
   const classComparisonData = [85, 78, 92, 88];
-  
-  // Get filter button style based on current period
-  const getPeriodButtonStyle = (period: PeriodType) => {
-    if (selectedPeriod === period) {
-      return {
-        backgroundColor: primaryColor,
-        borderColor: primaryColor,
-      };
-    }
-    
-    return {
-      backgroundColor: backgroundSecondaryColor,
-      borderColor,
-    };
-  };
 
   return (
-    <ThemedView style={styles.container}>
+    <View className="flex-1 bg-white">
       <ScrollView 
+        className="px-4 pb-8"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.headerContainer}>
+        <View className="flex-row items-center mt-12 mb-6">
           <TouchableOpacity 
-            style={styles.backButton}
+            className="mr-3 p-1"
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color={iconColor} />
+            <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
-          <ThemedText variant="headingLarge">
+          <Text className="text-2xl font-bold text-gray-800">
             Attendance Reports
-          </ThemedText>
+          </Text>
         </View>
         
         {/* Period Selection */}
-        <Card style={styles.card}>
-          <CardHeader title="Time Period" />
-          <CardContent style={styles.periodButtonsContainer}>
-            <View style={styles.periodButtons}>
-              <TouchableOpacity 
-                style={[
-                  styles.periodButton, 
-                  getPeriodButtonStyle('weekly')
-                ]}
-                onPress={() => setSelectedPeriod('weekly')}
-              >
-                <ThemedText 
-                  variant="labelMedium"
-                  style={{ 
-                    color: selectedPeriod === 'weekly' ? textInverseColor : undefined 
-                  }}
-                >
-                  Weekly
-                </ThemedText>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[
-                  styles.periodButton, 
-                  getPeriodButtonStyle('monthly')
-                ]}
-                onPress={() => setSelectedPeriod('monthly')}
-              >
-                <ThemedText 
-                  variant="labelMedium"
-                  style={{ 
-                    color: selectedPeriod === 'monthly' ? textInverseColor : undefined 
-                  }}
-                >
-                  Monthly
-                </ThemedText>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[
-                  styles.periodButton, 
-                  getPeriodButtonStyle('semester')
-                ]}
-                onPress={() => setSelectedPeriod('semester')}
-              >
-                <ThemedText 
-                  variant="labelMedium"
-                  style={{ 
-                    color: selectedPeriod === 'semester' ? textInverseColor : undefined 
-                  }}
-                >
-                  Semester
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
-          </CardContent>
-        </Card>
+        <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
+          <Text className="text-lg font-bold text-gray-800 mb-2">Time Period</Text>
+          <View className="flex-row px-2">
+            <TouchableOpacity 
+              className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'weekly' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
+              onPress={() => setSelectedPeriod('weekly')}
+            >
+              <Text className={`text-sm font-medium ${selectedPeriod === 'weekly' ? 'text-white' : 'text-gray-800'}`}>
+                Weekly
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'monthly' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
+              onPress={() => setSelectedPeriod('monthly')}
+            >
+              <Text className={`text-sm font-medium ${selectedPeriod === 'monthly' ? 'text-white' : 'text-gray-800'}`}>
+                Monthly
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className={`px-4 py-1 rounded-full mr-2 border ${selectedPeriod === 'semester' ? 'bg-black border-black' : 'bg-gray-100 border-gray-200'}`}
+              onPress={() => setSelectedPeriod('semester')}
+            >
+              <Text className={`text-sm font-medium ${selectedPeriod === 'semester' ? 'text-white' : 'text-gray-800'}`}>
+                Semester
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         
         {/* Attendance Trend Chart */}
-        <Card style={styles.card}>
-          <CardHeader title="Attendance Trend" />
-          <CardContent>
-            <SimpleLineChart
-              data={selectedPeriod === 'semester' ? semesterData : monthlyData}
-              labels={selectedPeriod === 'semester' ? semesterLabels : monthlyLabels}
-              width={screenWidth - (layout.screenPaddingHorizontal * 2 + spacing.md * 2)}
-              height={220}
-              color={primaryColor}
-              title="Average Attendance (%)"
-            />
-          </CardContent>
-        </Card>
+        <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
+          <Text className="text-lg font-bold text-gray-800 mb-2">Attendance Trend</Text>
+          <SimpleLineChart
+            data={selectedPeriod === 'semester' ? semesterData : monthlyData}
+            labels={selectedPeriod === 'semester' ? semesterLabels : monthlyLabels}
+            width={screenWidth - 40}
+            height={220}
+            color="#000000"
+            title="Average Attendance (%)"
+          />
+        </View>
         
         {/* Class Comparison Chart */}
-        <Card style={styles.card}>
-          <CardHeader title="Class Comparison" />
-          <CardContent>
-            <SimpleBarChart
-              data={classComparisonData}
-              labels={classComparisonLabels}
-              width={screenWidth - (layout.screenPaddingHorizontal * 2 + spacing.md * 2)}
-              height={220}
-              color={primaryColor}
-              title="Class Attendance (%)"
-            />
-          </CardContent>
-        </Card>
+        <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
+          <Text className="text-lg font-bold text-gray-800 mb-2">Class Comparison</Text>
+          <SimpleBarChart
+            data={classComparisonData}
+            labels={classComparisonLabels}
+            width={screenWidth - 40}
+            height={220}
+            color="#000000"
+            title="Class Attendance (%)"
+          />
+        </View>
         
         {/* Statistics Summary */}
-        <Card style={styles.card}>
-          <CardHeader title="Summary Statistics" />
-          <CardContent>
-            <View style={styles.statsRow}>
-              <ThemedView 
-                style={styles.statCard}
-                lightColor={`${infoColor}10`}
-                bordered
-              >
-                <ThemedText 
-                  variant="labelMedium" 
-                  style={{ color: infoColor }}
-                >
-                  Highest Attendance
-                </ThemedText>
-                <ThemedText 
-                  variant="displaySmall" 
-                  style={{ color: infoColor }}
-                >
-                  92%
-                </ThemedText>
-                <ThemedText 
-                  variant="bodySmall" 
-                  style={{ color: infoColor }}
-                >
-                  CS301 - Database Systems
-                </ThemedText>
-              </ThemedView>
-              
-              <ThemedView 
-                style={styles.statCard}
-                lightColor={`${errorColor}10`}
-                bordered
-              >
-                <ThemedText 
-                  variant="labelMedium" 
-                  style={{ color: errorColor }}
-                >
-                  Lowest Attendance
-                </ThemedText>
-                <ThemedText 
-                  variant="displaySmall" 
-                  style={{ color: errorColor }}
-                >
-                  78%
-                </ThemedText>
-                <ThemedText 
-                  variant="bodySmall" 
-                  style={{ color: errorColor }}
-                >
-                  CS201 - Data Structures
-                </ThemedText>
-              </ThemedView>
+        <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
+          <Text className="text-lg font-bold text-gray-800 mb-2">Summary Statistics</Text>
+          <View className="flex-row justify-between mb-4">
+            <View className="bg-blue-50 p-4 rounded-lg w-[48%] border border-blue-100">
+              <Text className="text-sm font-medium text-blue-800">
+                Highest Attendance
+              </Text>
+              <Text className="text-2xl font-bold text-blue-800">
+                92%
+              </Text>
+              <Text className="text-xs text-blue-800">
+                CS301 - Database Systems
+              </Text>
             </View>
             
-            <ThemedView 
-              style={[styles.statCard, styles.fullWidthStatCard]}
-              lightColor={`${successColor}10`}
-              bordered
-            >
-              <ThemedText 
-                variant="labelMedium" 
-                style={{ color: successColor }}
-              >
-                Overall Average
-              </ThemedText>
-              <ThemedText 
-                variant="displaySmall" 
-                style={{ color: successColor }}
-              >
-                85.75%
-              </ThemedText>
-              <ThemedText 
-                variant="bodySmall" 
-                style={{ color: successColor }}
-              >
-                Across all classes
-              </ThemedText>
-            </ThemedView>
-          </CardContent>
-        </Card>
+            <View className="bg-red-50 p-4 rounded-lg w-[48%] border border-red-100">
+              <Text className="text-sm font-medium text-red-800">
+                Lowest Attendance
+              </Text>
+              <Text className="text-2xl font-bold text-red-800">
+                78%
+              </Text>
+              <Text className="text-xs text-red-800">
+                CS201 - Data Structures
+              </Text>
+            </View>
+          </View>
+          
+          <View className="bg-green-50 p-4 rounded-lg w-full border border-green-100">
+            <Text className="text-sm font-medium text-green-800">
+              Overall Average
+            </Text>
+            <Text className="text-2xl font-bold text-green-800">
+              85.75%
+            </Text>
+            <Text className="text-xs text-green-800">
+              Across all classes
+            </Text>
+          </View>
+        </View>
         
         {/* Export Options */}
-        <Card style={styles.card}>
-          <CardHeader title="Export Report" />
-          <CardContent style={styles.exportButtonsContainer}>
-            <Button
-              variant="primary"
-              leftIcon="document-text-outline"
-              style={styles.exportButton}
+        <View className="bg-white rounded-xl shadow-sm mb-5 p-4 border border-gray-100">
+          <Text className="text-lg font-bold text-gray-800 mb-2">Export Report</Text>
+          <View className="flex-row justify-between px-2">
+            <TouchableOpacity
+              style={{ elevation: 2 }}
+              className="bg-black px-3 py-2 rounded-lg w-[30%] items-center flex-row justify-center"
               onPress={() => {/* Export functionality would go here */}}
             >
-              PDF
-            </Button>
+              <Ionicons name="document-text-outline" size={16} color="white" className="mr-1" />
+              <Text className="text-white text-sm font-medium ml-1">PDF</Text>
+            </TouchableOpacity>
             
-            <Button
-              variant="secondary"
-              leftIcon="grid-outline"
-              style={styles.exportButton}
+            <TouchableOpacity
+              style={{ elevation: 2 }}
+              className="bg-gray-800 px-3 py-2 rounded-lg w-[30%] items-center flex-row justify-center"
               onPress={() => {/* Export functionality would go here */}}
             >
-              Excel
-            </Button>
+              <Ionicons name="grid-outline" size={16} color="white" className="mr-1" />
+              <Text className="text-white text-sm font-medium ml-1">Excel</Text>
+            </TouchableOpacity>
             
-            <Button
-              variant="outline"
-              leftIcon="share-outline"
-              style={styles.exportButton}
+            <TouchableOpacity
+              style={{ elevation: 2 }}
+              className="bg-white px-3 py-2 rounded-lg w-[30%] items-center flex-row justify-center border border-gray-300"
               onPress={() => {/* Export functionality would go here */}}
             >
-              Share
-            </Button>
-          </CardContent>
-        </Card>
+              <Ionicons name="share-outline" size={16} color="black" className="mr-1" />
+              <Text className="text-black text-sm font-medium ml-1">Share</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: layout.screenPaddingHorizontal,
-    paddingBottom: spacing.xl,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  backButton: {
-    marginRight: spacing.md,
-    padding: spacing.xs,
-  },
-  card: {
-    marginBottom: layout.sectionSpacing,
-  },
-  periodButtonsContainer: {
-    paddingHorizontal: spacing.sm,
-  },
-  periodButtons: {
-    flexDirection: 'row',
-  },
-  periodButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    marginRight: spacing.sm,
-    borderWidth: 1,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  statCard: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    width: '48%',
-    borderWidth: 1,
-  },
-  fullWidthStatCard: {
-    width: '100%',
-  },
-  exportButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.sm,
-  },
-  exportButton: {
-    width: '30%',
-  },
-});

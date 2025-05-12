@@ -55,7 +55,7 @@ export default function DashboardScreen() {
     });
   };
   useEffect(() => {
-    const loadStats = async () => {
+    const loadGrievStats = async () => {
       try {
         loadStats();
       } catch (error) {
@@ -65,7 +65,7 @@ export default function DashboardScreen() {
       }
     };
 
-    loadStats();
+    loadGrievStats();
   }, []);
 
   if (loading) {
@@ -134,8 +134,8 @@ export default function DashboardScreen() {
                 style={{ elevation: 5 }}
                 className="bg-black px-5 py-4 w-40 h-40 rounded-xl items-center justify-center"
               >
-                <Feather name="settings" size={28} color="white" />
-                <Text className="text-white text-xs text-center font-semibold mt-2">Settings</Text>
+                <Ionicons name="person" size={24} color='white' />
+                <Text className="text-white text-xs text-center font-semibold mt-2">Profile</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -300,140 +300,3 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
 });
-// return (
-//   <ThemedView style={styles.container}>
-//     <ScrollView
-//       contentContainerStyle={styles.scrollContent}
-//       showsVerticalScrollIndicator={false}
-//       refreshControl={
-//             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-//           }
-//     >
-//       <Text
-//       className='text-3xl font-bold text-gray-500'>
-//         Teacher Dashboard
-//       </Text>
-
-//       {/* Quick Actions */}
-//       <Card style={styles.sectionCard}>
-//         <CardHeader title="Quick Actions" />
-//         <CardContent style={styles.quickActionsContainer}>
-//           <View style={styles.actionButtonsRow}>
-//             <Button
-//               variant="primary"
-//               leftIcon="calendar-outline"
-//               style={styles.actionButton}
-//               onPress={() => router.push('/attendance/take')}
-//             >
-//               Take Attendance
-//             </Button>
-
-//             <Button
-//               variant="primary"
-//               leftIcon="document-text-outline"
-//               style={styles.actionButton}
-//               onPress={() => router.push('/grievances')}
-//             >
-//               View Grievances
-//             </Button>
-//           </View>
-
-//           <View style={styles.actionButtonsRow}>
-//             <Button
-//               variant="primary"
-//               leftIcon="bar-chart-outline"
-//               style={styles.actionButton}
-//               onPress={() => router.push('/attendance/reports')}
-//             >
-//               Attendance Reports
-//             </Button>
-
-//             <Button
-//               variant="primary"
-//               leftIcon="settings-outline"
-//               style={styles.actionButton}
-//               onPress={() => router.push('/profile')}
-//             >
-//               Settings
-//             </Button>
-//           </View>
-//         </CardContent>
-//       </Card>
-
-//       {/* Grievance Stats */}
-//       {/* <Card style={styles.sectionCard}>
-//         <CardHeader className='' title="Grievance Overview" />
-//         <CardContent style={styles.statsContainer}>
-//           <DashboardCard
-//             title="Pending"
-//             value={stats.pendingGrievances}
-//             icon="alert-circle-outline"
-//             variant="warning"
-//             onPress={() => router.push('/grievances?filter=pending')}
-//           />
-//           <DashboardCard
-//             title="Resolved"
-//             value={stats.resolvedGrievances}
-//             icon="checkmark-circle-outline"
-//             variant="success"
-//             onPress={() => router.push('/grievances?filter=resolved')}
-//           />
-//           <DashboardCard
-//             title="Total"
-//             value={stats.totalGrievances}
-//             icon="document-text-outline"
-//             variant="info"
-//             onPress={() => router.push('/grievances')}
-//           />
-//         </CardContent>
-//       </Card> */}
-//       <View className="flex-row justify-between mb-5 p-4">
-//         <View className="bg-amber-400 rounded-lg p-5 flex-1 m-1 items-center">
-//           <Text className="text-2xl font-bold text-white">
-//             {stats.totalGrievances}
-//           </Text>
-//           <Text className="text-white">Total</Text>
-//         </View>
-//         <View className="bg-amber-500 rounded-lg p-5 flex-1 m-1 items-center">
-//           <Text className="text-2xl font-bold text-white">
-//             {stats.pendingGrievances}
-//           </Text>
-//           <Text className="text-white">Pending</Text>
-//         </View>
-//         <View className="bg-amber-600 rounded-lg p-5 flex-1 m-1 items-center">
-//           <Text className="text-2xl font-bold text-white">
-//             {stats.resolvedGrievances}
-//           </Text>
-//           <Text className="text-white">Resolved</Text>
-//         </View>
-//       </View>
-//       {/* Attendance Stats */}
-//       <Card style={styles.sectionCard}>
-//         <CardHeader title="Attendance Overview" />
-//         <CardContent style={styles.statsContainer}>
-//           <DashboardCard
-//             title="Avg. Attendance"
-//             value={`${stats.averageAttendance}%`}
-//             icon="analytics-outline"
-//             variant="info"
-//             onPress={() => router.push('/attendance/reports')}
-//           />
-//           <DashboardCard
-//             title="Low Attendance"
-//             value={stats.lowAttendanceStudents}
-//             icon="warning-outline"
-//             variant="error"
-//             onPress={() => router.push('/attendance/low')}
-//           />
-//           <DashboardCard
-//             title="Total Students"
-//             value={stats.totalStudents}
-//             icon="people-outline"
-//             variant="primary"
-//             onPress={() => router.push('/attendance/students')}
-//           />
-//         </CardContent>
-//       </Card>
-//     </ScrollView>
-//   </ThemedView>
-// );

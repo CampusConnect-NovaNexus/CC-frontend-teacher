@@ -418,11 +418,7 @@ export default function GrievanceScreen() {
             </View>
           )}
           <View className="flex-row justify-left items-center">
-            <UpVoteBtn
-              c_id={item.c_id}
-              user_id={user_id}
-              upVotes={item.upvotes}
-            />
+            
             <View className="flex-row justify-center items-center px-2">
               <Pressable
                 className="flex-row gap-2 items-center border border-gray-300 bg-white p-2 px-4 rounded-full ml-1 mt-1"
@@ -454,22 +450,22 @@ export default function GrievanceScreen() {
   };
 
   return (
-    <View className="flex-1 relative bg-[#fdfcf9]">
-      <View className="flex-1 relative bg-[#fdfcf9]">
+    <View className="flex-1 relative bg-[#72726f]">
+      <View className="flex-1 relative bg-[#fbf7f7]">
         <View className="flex-row justify-between mb-5 p-4">
-          <View className="bg-amber-400 rounded-lg p-5 flex-1 m-1 items-center">
+          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.total_complaints}
             </Text>
             <Text className="text-white">Total</Text>
           </View>
-          <View className="bg-amber-500 rounded-lg p-5 flex-1 m-1 items-center">
+          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.unresolved_complaints}
             </Text>
             <Text className="text-white">Pending</Text>
           </View>
-          <View className="bg-amber-600 rounded-lg p-5 flex-1 m-1 items-center">
+          <View className="bg-black rounded-xl p-5 flex-1 m-1 items-center">
             <Text className="text-2xl font-bold text-white">
               {stats.resolved_complaints}
             </Text>
@@ -487,7 +483,7 @@ export default function GrievanceScreen() {
             <TouchableOpacity
               onPress={() => setIsDropdownVisible(prev => !prev)}
               style={{
-                backgroundColor: '#F59E0B', // amber-500
+                backgroundColor: 'black', // amber-500
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 borderRadius: 20,
@@ -606,236 +602,7 @@ export default function GrievanceScreen() {
           />
         )}
 
-        {/* New Grievance Modal */}
-        {/* <Modal
-          isVisible={formVisible}
-          animationIn="fadeInUp"
-          animationOut="fadeOutDown"
-          animationInTiming={400}
-          animationOutTiming={400}
-          backdropTransitionInTiming={400}
-          backdropTransitionOutTiming={200}
-          backdropColor="rgba(0,0,0,0.5)"
-          onBackdropPress={() => setFormVisible(false)}
-          style={styles.modal}
-        >
-          <View style={{
-            backgroundColor: 'white',
-            borderRadius: 16,
-            padding: 24,
-            margin: 16,
-            width: '90%',
-            alignSelf: 'center',
-            maxHeight: '80%',
-          }}>
-            <Text style={{
-              fontSize: 22,
-              fontWeight: 'bold',
-              marginBottom: 20,
-              textAlign: 'center',
-              color: '#1F2937',
-            }}>
-              Submit New Grievance
-            </Text>
-
-            <Pressable
-              onPress={() => setFormVisible(false)}
-              style={{
-                position: 'absolute',
-                right: -10,
-                top: -10,
-                backgroundColor: 'white',
-                padding: 10,
-                borderRadius: 999,
-                elevation: 5,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 3,
-              }}
-            >
-              <Image
-                source={icons.cross}
-                style={{ width: 20, height: 20 }}
-                resizeMode="contain"
-              />
-            </Pressable>
-
-            <Text style={{ color: '#4B5563', fontWeight: '500', marginBottom: 6, marginLeft: 4 }}>
-              Title
-            </Text>
-            <TextInput
-              style={{
-                backgroundColor: '#F3F4F6',
-                borderRadius: 10,
-                padding: 14,
-                marginBottom: 16,
-                color: '#1F2937',
-                fontSize: 16,
-              }}
-              placeholder="Enter grievance title"
-              value={newGrievance.title}
-              onChangeText={(text) =>
-                setNewGrievance({ ...newGrievance, title: text })
-              }
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <Text style={{ color: '#4B5563', fontWeight: '500', marginBottom: 6, marginLeft: 4 }}>
-              Description
-            </Text>
-            <TextInput
-              style={{
-                backgroundColor: '#F3F4F6',
-                borderRadius: 10,
-                padding: 14,
-                marginBottom: 16,
-                height: 100,
-                textAlignVertical: 'top',
-                color: '#1F2937',
-                fontSize: 16,
-              }}
-              placeholder="Describe your grievance in detail"
-              multiline
-              value={newGrievance.description}
-              onChangeText={(text) =>
-                setNewGrievance({ ...newGrievance, description: text })
-              }
-              placeholderTextColor="#9CA3AF"
-            />
-            <View style={{ marginBottom: 16 }}>
-              <Text style={{ color: '#4B5563', fontWeight: '500', marginBottom: 6, marginLeft: 4 }}>
-                Category
-              </Text>
-              <TouchableOpacity
-                onPress={() => setDropdownVisible(!dropdownVisible)}
-                style={{
-                  backgroundColor: '#F3F4F6',
-                  borderRadius: 10,
-                  padding: 14,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: newGrievance.selectedCategory ? '#F59E0B' : '#E5E7EB',
-                }}
-              >
-                <Text style={{
-                  color: newGrievance.selectedCategory ? '#92400E' : '#6B7280',
-                  fontWeight: newGrievance.selectedCategory ? '500' : 'normal',
-                  fontSize: 16,
-                }}>
-                  {newGrievance.selectedCategory
-                    ? newGrievance.selectedCategory
-                    : "Select grievance category"}
-                </Text>
-                <Ionicons
-                  name={dropdownVisible ? "chevron-up" : "chevron-down"}
-                  size={18}
-                  color="#6B7280"
-                />
-              </TouchableOpacity>
-
-              <Modal
-                isVisible={dropdownVisible}
-                onBackdropPress={() => setDropdownVisible(false)}
-                backdropOpacity={0.1}
-                animationIn="fadeIn"
-                animationOut="fadeOut"
-                animationInTiming={200}
-                animationOutTiming={200}
-                backdropTransitionInTiming={200}
-                backdropTransitionOutTiming={200}
-                style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}
-              >
-                <View style={{
-                  backgroundColor: 'white',
-                  borderRadius: 10,
-                  width: '85%',
-                  maxHeight: 300,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 3,
-                  elevation: 3,
-                  borderWidth: 1,
-                  borderColor: '#F3F4F6',
-                }}>
-                  <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#F3F4F6',
-                    padding: 14,
-                  }}>
-                    <Text style={{ fontWeight: 'bold', color: '#1F2937', fontSize: 16 }}>
-                      Select Category
-                    </Text>
-                    <TouchableOpacity onPress={() => setDropdownVisible(false)}>
-                      <Ionicons name="close" size={22} color="#6B7280" />
-                    </TouchableOpacity>
-                  </View>
-
-                  <ScrollView style={{ maxHeight: 250 }}>
-                    {options.map((option, index, array) => (
-                      <TouchableOpacity
-                        key={index}
-                        onPress={() => {
-                          setNewGrievance({ ...newGrievance, selectedCategory: option })
-                          setDropdownVisible(false);
-                        }}
-                        style={{
-                          padding: 14,
-                          borderBottomWidth: index === array.length - 1 ? 0 : 1,
-                          borderBottomColor: '#F3F4F6',
-                          backgroundColor: newGrievance.selectedCategory === option ? '#FEF3C7' : 'white',
-                        }}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          {newGrievance.selectedCategory === option && (
-                            <Ionicons name="checkmark-circle" size={18} color="#F59E0B" style={{ marginRight: 8 }} />
-                          )}
-                          <Text style={{
-                            color: newGrievance.selectedCategory === option ? '#92400E' : '#4B5563',
-                            fontWeight: newGrievance.selectedCategory === option ? '500' : 'normal',
-                            fontSize: 16,
-                          }}>
-                            {option}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              </Modal>
-            </View>
-
-            <Pressable
-              onPress={postNewGrievance}
-              style={{
-                backgroundColor: '#D97706', // amber-600
-                padding: 16,
-                borderRadius: 12,
-                marginTop: 8,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 3,
-                elevation: 2,
-              }}
-            >
-              <Text style={{
-                color: 'white',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                fontSize: 18,
-              }}>
-                Submit Grievance
-              </Text>
-            </Pressable>
-          </View>
-        </Modal> */}
+       
 
         <Modal
           isVisible={grievanceVisible}
@@ -901,21 +668,21 @@ export default function GrievanceScreen() {
             />
 
             <View className="flex-row items-center gap-2 mt-2">
-              <TextInput
+              {/* <TextInput
                 className="bg-gray-100 rounded-lg flex-1 p-3"
                 placeholder="Your Comment here..."
                 value={newComment}
                 onChangeText={setNewComment}
                 placeholderTextColor="#6B7280"
-              />
-              <Pressable
+              /> */}
+              {/* <Pressable
                 onPress={() =>
                   grievanceItem && handlePostComment(grievanceItem.c_id)
                 }
                 className="bg-amber-600 p-3 rounded-full"
               >
                 <Ionicons name="send" size={24} color="white" />
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>
         </Modal>

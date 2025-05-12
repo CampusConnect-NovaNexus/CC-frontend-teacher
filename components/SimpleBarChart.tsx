@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, Dimensions } from 'react-native';
-import Svg, { Rect, Line, Text as SvgText } from 'react-native-svg';
+import { Dimensions, Text, View } from 'react-native';
+import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 
 interface BarChartProps {
   data: number[];
@@ -17,7 +17,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
   labels,
   width = Dimensions.get('window').width - 40,
   height = 220,
-  color = '#3498db',
+  color = '#000000',
   backgroundColor = '#ffffff',
   title
 }) => {
@@ -36,9 +36,11 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
       height, 
       backgroundColor, 
       borderRadius: 16,
-      padding: 10
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#f0f0f0'
     }}>
-      {title && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>{title}</Text>}
+      {title && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10, color: '#000000' }}>{title}</Text>}
       
       <Svg width={width - 20} height={height - (title ? 40 : 20)}>
         {/* Y-axis */}
@@ -47,7 +49,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
           y1={padding.top}
           x2={padding.left}
           y2={padding.top + chartHeight}
-          stroke="#ccc"
+          stroke="#000000"
           strokeWidth="1"
         />
         
@@ -57,7 +59,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
           y1={padding.top + chartHeight}
           x2={padding.left + chartWidth}
           y2={padding.top + chartHeight}
-          stroke="#ccc"
+          stroke="#000000"
           strokeWidth="1"
         />
         
@@ -89,7 +91,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
               x={x}
               y={height - padding.bottom + 15}
               fontSize="10"
-              fill="#666"
+              fill="#000000"
               textAnchor="middle"
             >
               {label}
@@ -107,7 +109,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({
               x={padding.left - 10}
               y={y + 4}
               fontSize="10"
-              fill="#666"
+              fill="#000000"
               textAnchor="end"
             >
               {Math.round(value)}

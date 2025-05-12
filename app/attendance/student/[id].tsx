@@ -1,5 +1,5 @@
 import SimpleLineChart from '@/components/SimpleLineChart';
-import { getAttendanceStats } from '@/service/attendance/getAttendanceStats';
+import { getAttendanceStats } from '@/service/attendance/getAttendanceStatsOfStudent';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useLocalSearchParams } from 'expo-router';

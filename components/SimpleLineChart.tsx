@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface LineChartProps {
   data: number[];
@@ -16,7 +16,7 @@ const SimpleLineChart: React.FC<LineChartProps> = ({
   labels,
   width = 300,
   height = 220,
-  color = '#3498db',
+  color = '#000000',
   backgroundColor = '#ffffff',
   title
 }) => {
@@ -34,7 +34,7 @@ const SimpleLineChart: React.FC<LineChartProps> = ({
         backgroundColor 
       }
     ]}>
-      {title && <Text style={styles.title}>{title}</Text>}
+      {title && <Text style={[styles.title, { color: '#000000' }]}>{title}</Text>}
       
       <View style={styles.dataContainer}>
         {labels.map((label, index) => (
@@ -49,14 +49,14 @@ const SimpleLineChart: React.FC<LineChartProps> = ({
                 }
               ]} 
             />
-            <Text style={styles.label}>{label}</Text>
-            <Text style={styles.value}>{data[index]}%</Text>
+            <Text style={[styles.label, { color: '#000000' }]}>{label}</Text>
+            <Text style={[styles.value, { color: '#000000' }]}>{data[index]}%</Text>
           </View>
         ))}
       </View>
       
       <View style={styles.averageContainer}>
-        <Text style={styles.averageText}>
+        <Text style={[styles.averageText, { color: '#000000' }]}>
           Average: {average.toFixed(1)}%
         </Text>
       </View>
@@ -69,6 +69,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 15,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
   },
   title: {
     fontSize: 16,
@@ -109,7 +111,6 @@ const styles = StyleSheet.create({
   averageText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#666',
   }
 });
 
